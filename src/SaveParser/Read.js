@@ -578,36 +578,8 @@ export default class SaveParser_Read
             let itemsLength                 = this.readInt();
                 for(let i = 0; i < itemsLength; i++)
                 {
-                    let currentItem             = {};
-                        currentItem.itemName    = this.readObjectProperty();
-
-                        if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
-                        {
-                            let itemState   = this.readInt();
-                                if(itemState !== 0)
-                                {
-                                    currentItem.itemState             = this.readObjectProperty();
-                                    currentItem.itemStateProperties   = [];
-
-                                    this.readInt(); // itemStateLength
-                                    while(true)
-                                    {
-                                        let property = this.readProperty();
-                                            if(property === null)
-                                            {
-                                                break;
-                                            }
-
-                                            currentItem.itemStateProperties.push(property);
-                                    }
-                                }
-                        }
-                        else
-                        {
-                            currentItem.itemState = this.readObjectProperty();
-                        }
-
-                        currentItem.position = this.readFloat();
+                    let currentItem             = this.readInventoryItem();
+                        currentItem.position    = this.readFloat();
 
                     this.objects[objectKey].extra.items.push(currentItem);
                 }
@@ -661,27 +633,9 @@ export default class SaveParser_Read
             let mActualItems = this.readInt();
                 for(let i = 0; i < mActualItems; i++)
                 {
-                    let currentItem = {itemName: this.readObjectProperty()};
-                    let itemState   = this.readInt();
-                        if(itemState !== 0)
-                        {
-                            currentItem.itemState             = this.readObjectProperty();
-                            currentItem.itemStateProperties   = [];
+                    let currentItem             = this.readInventoryItem();
+                        currentItem.position    = this.readFloat();
 
-                            this.readInt(); // itemStateLength
-                            while(true)
-                            {
-                                let property = this.readProperty();
-                                    if(property === null)
-                                    {
-                                        break;
-                                    }
-
-                                    currentItem.itemStateProperties.push(property);
-                            }
-                        }
-
-                    currentItem.position = this.readFloat();
                     this.objects[objectKey].extra.mActualItems.push(currentItem);
                 }
 
@@ -1322,10 +1276,7 @@ export default class SaveParser_Read
                     switch(currentProperty.structureSubType)
                     {
                         case 'InventoryItem': // MOD: FicsItNetworks
-                            currentProperty.value.values.push({
-                                itemName      : this.readObjectProperty(),
-                                itemState     : this.readObjectProperty()
-                            });
+                            currentProperty.value.values.push(this.readInventoryItem());
 
                             break;
 
@@ -1916,33 +1867,7 @@ export default class SaveParser_Read
                 break;
 
             case 'InventoryItem':
-                currentProperty.value.itemName      = this.readObjectProperty();
-
-                if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
-                {
-                    let itemState = this.readInt();
-                        if(itemState !== 0)
-                        {
-                            currentProperty.value.itemState             = this.readObjectProperty();
-                            currentProperty.value.itemStateProperties   = [];
-
-                            this.readInt(); // itemStateLength
-                            while(true)
-                            {
-                                let property = this.readProperty();
-                                    if(property === null)
-                                    {
-                                        break;
-                                    }
-
-                                    currentProperty.value.itemStateProperties.push(property);
-                            }
-                        }
-                }
-                else
-                {
-                    currentProperty.value.itemState = this.readObjectProperty();
-                }
+                currentProperty.value = this.readInventoryItem(currentProperty.value);
 
                 if(this.header.saveVersion >= 46)
                 {
@@ -2187,6 +2112,39 @@ export default class SaveParser_Read
             {
                 currentProperty.propertyGuid = this.readHex(16);
             }
+
+        return currentProperty;
+    }
+
+    readInventoryItem(currentProperty = {})
+    {
+        currentProperty.itemName = this.readObjectProperty();
+
+        if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
+        {
+            let itemState = this.readInt();
+                if(itemState !== 0)
+                {
+                    currentProperty.itemState             = this.readObjectProperty();
+                    currentProperty.itemStateProperties   = [];
+
+                    this.readInt(); // itemStateLength
+                    while(true)
+                    {
+                        let property = this.readProperty();
+                            if(property === null)
+                            {
+                                break;
+                            }
+
+                            currentProperty.itemStateProperties.push(property);
+                    }
+                }
+        }
+        else
+        {
+            currentProperty.itemState = this.readObjectProperty();
+        }
 
         return currentProperty;
     }

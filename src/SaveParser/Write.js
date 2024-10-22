@@ -807,43 +807,7 @@ export default class SaveParser_Write
 
                 for(let i = 0; i < itemsLength; i++)
                 {
-                    //entity += this.writeObjectProperty(currentObject.extra.items[i].itemName);
-                    entity += this.writeInt(0);
-                    entity += this.writeString(currentObject.extra.items[i].itemName.pathName);
-
-                    if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
-                    {
-                        if(currentObject.extra.items[i].itemState !== undefined)
-                        {
-                            entity += this.writeInt(0);
-                            entity += this.writeObjectProperty(currentObject.extra.items[i].itemState);
-
-                            let currentBufferStartingLength     = this.currentBufferLength;
-                            let structPropertyBufferLength      = this.currentEntityLength;
-                            let itemStateProperties             = '';
-                                for(let j = 0; j < currentObject.extra.items[i].itemStateProperties.length; j++)
-                                {
-                                    itemStateProperties += this.writeProperty(currentObject.extra.items[i].itemStateProperties[j]);
-                                }
-                                itemStateProperties += this.writeString('None');
-
-                                this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
-
-                                entity += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
-                                entity += itemStateProperties;
-                        }
-                        else
-                        {
-                            entity += this.writeInt(0);
-                        }
-                    }
-                    else
-                    {
-                        entity += this.writeString('');
-                        entity += this.writeString('');
-                        //entity += this.writeObjectProperty(currentObject.extra.items[i].itemState);
-                    }
-
+                    entity += this.writeInventoryItem(currentObject.extra.items[i]);
                     entity += this.writeFloat(currentObject.extra.items[i].position);
                 }
 
@@ -895,32 +859,7 @@ export default class SaveParser_Write
 
             for(let i = 0; i < currentObject.extra.mActualItems.length; i++)
             {
-                entity += this.writeObjectProperty(currentObject.extra.mActualItems[i].itemName);
-
-                if(currentObject.extra.mActualItems[i].itemState !== undefined)
-                {
-                    entity += this.writeInt(1);
-                    entity += this.writeObjectProperty(currentObject.extra.mActualItems[i].itemState);
-
-                    let currentBufferStartingLength     = this.currentBufferLength;
-                    let structPropertyBufferLength      = this.currentEntityLength;
-                    let itemStateProperties             = '';
-                        for(let j = 0; j < currentObject.extra.mActualItems[i].itemStateProperties.length; j++)
-                        {
-                            itemStateProperties += this.writeProperty(currentObject.extra.mActualItems[i].itemStateProperties[j]);
-                        }
-                        itemStateProperties += this.writeString('None');
-
-                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
-
-                        entity += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
-                        entity += itemStateProperties;
-                }
-                else
-                {
-                    entity += this.writeInt(0);
-                }
-
+                entity += this.writeInventoryItem(currentObject.extra.mActualItems[i]);
                 entity += this.writeFloat(currentObject.extra.mActualItems[i].position);
             }
 
@@ -1486,8 +1425,7 @@ export default class SaveParser_Write
                     switch(currentProperty.structureSubType)
                     {
                         case 'InventoryItem': // MOD: FicsItNetworks
-                            structure += this.writeObjectProperty(currentProperty.value.values[i].itemName);
-                            structure += this.writeObjectProperty(currentProperty.value.values[i].itemState);
+                            structure += this.writeInventoryItem(currentProperty.value.values[i]);
 
                             break;
 
@@ -1984,45 +1922,7 @@ export default class SaveParser_Write
                 break;
 
             case 'InventoryItem':
-                property += this.writeObjectProperty(currentProperty.value.itemName);
-
-                if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
-                {
-                    if(currentProperty.value.itemState !== undefined)
-                    {
-                        property += this.writeInt(1);
-                        property += this.writeObjectProperty(currentProperty.value.itemState);
-
-                        let currentBufferStartingLength     = this.currentBufferLength;
-                        let structPropertyBufferLength      = this.currentEntityLength;
-                        let itemStateProperties             = '';
-                            for(let i = 0; i < currentProperty.value.itemStateProperties.length; i++)
-                            {
-                                itemStateProperties += this.writeProperty(currentProperty.value.itemStateProperties[i]);
-                            }
-                            itemStateProperties += this.writeString('None');
-
-                            this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
-
-                            property += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
-                            property += itemStateProperties;
-                    }
-                    else
-                    {
-                        property += this.writeInt(0);
-                    }
-                }
-                else
-                {
-                    if(currentProperty.value.itemState !== undefined)
-                    {
-                        property += this.writeObjectProperty(currentProperty.value.itemState);
-                    }
-                    else
-                    {
-                        property += this.writeObjectProperty({levelName: '', pathName: ''});
-                    }
-                }
+                property += this.writeInventoryItem(currentProperty.value);
 
                 let oldLength   = this.currentBufferLength;
                     if(currentProperty.value.properties[0] !== null)
@@ -2196,6 +2096,52 @@ export default class SaveParser_Write
             else
             {
                 property += this.writeByte(0, false);
+            }
+
+        return property;
+    }
+
+    writeInventoryItem(value)
+    {
+        let property = '';
+            property += this.writeObjectProperty(value.itemName);
+
+            if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
+            {
+                if(value.itemState !== undefined)
+                {
+                    property += this.writeInt(1);
+                    property += this.writeObjectProperty(value.itemState);
+
+                    let currentBufferStartingLength     = this.currentBufferLength;
+                    let structPropertyBufferLength      = this.currentEntityLength;
+                    let itemStateProperties             = '';
+                        for(let i = 0; i < value.itemStateProperties.length; i++)
+                        {
+                            itemStateProperties += this.writeProperty(value.itemStateProperties[i]);
+                        }
+                        itemStateProperties += this.writeString('None');
+
+                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+
+                        property += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
+                        property += itemStateProperties;
+                }
+                else
+                {
+                    property += this.writeInt(0);
+                }
+            }
+            else
+            {
+                if(value.itemState !== undefined)
+                {
+                    property += this.writeObjectProperty(value.itemState);
+                }
+                else
+                {
+                    property += this.writeObjectProperty({levelName: '', pathName: ''});
+                }
             }
 
         return property;
