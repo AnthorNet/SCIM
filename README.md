@@ -23,7 +23,7 @@ You can see a [Live Example](https://satisfactory-calculator.com/en/interactive-
 <!-- LICENSE -->
 ## License
 
-Copy of the source code and data assets is not permitted in any case.  
+Resue of the source code and data assets is not permitted in any case, source code is only available for educational purpose.
 The map is solely intended to be used on the [satisfactory-calculator.com](https://satisfactory-calculator.com/) domain.
 
 
