@@ -1,5 +1,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import Building                                 from '../Building.js';
+
+import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 import Building_MapMarker                       from '../Building/MapMarker.js';
 
@@ -105,6 +108,16 @@ export default class SaveParser_FicsIt
                     return SaveParser_FicsIt.checkDroneStation(baseLayout, currentObject);
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
                     return SaveParser_FicsIt.checkDroneTransport(baseLayout, currentObject);
+
+                case '/Game/FactoryGame/Buildable/Factory/CA_Merger/Build_ConveyorAttachmentMerger.Build_ConveyorAttachmentMerger_C':
+                case '/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C':
+                case '/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C':
+                    return SaveParser_FicsIt.fixMissingConnectedComponents(baseLayout, currentObject);
+            }
+
+            if(Building.isConveyor(currentObject))
+            {
+                return SaveParser_FicsIt.fixMissingConnectedComponents(baseLayout, currentObject);
             }
         }
 
@@ -373,6 +386,44 @@ export default class SaveParser_FicsIt
         console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
         baseLayout.saveGameParser.deleteObject(currentObject.pathName);
         return null; // Trigger continue;
+    }
+
+    /*
+     * Fix when connected components aren't connect both ways...
+     */
+    static fixMissingConnectedComponents(baseLayout, currentObject)
+    {
+        if(currentObject.children !== undefined)
+        {
+            for(let i = 0; i < currentObject.children.length; i++)
+            {
+                let conveyorAny = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    if(conveyorAny !== null)
+                    {
+                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny, 'mConnectedComponent');
+                            if(mConnectedComponent !== null)
+                            {
+                                let targetComponent = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName);
+                                    if(targetComponent !== null)
+                                    {
+                                        let mTargetConnectedComponent = baseLayout.getObjectProperty(targetComponent, 'mConnectedComponent');
+                                            if(mTargetConnectedComponent === null)
+                                            {
+                                                console.log('Deleting missing target mConnectedComponent:' + mConnectedComponent.pathName);
+                                                baseLayout.deleteObjectProperty(conveyorAny, 'mConnectedComponent');
+                                            }
+                                    }
+                                    else
+                                    {
+                                        console.log('Deleting missing mConnectedComponent:' + mConnectedComponent.pathName);
+                                        baseLayout.deleteObjectProperty(conveyorAny, 'mConnectedComponent');
+                                    }
+                            }
+                    }
+            }
+        }
+
+        return currentObject;
     }
 
     /*
