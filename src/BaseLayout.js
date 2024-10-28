@@ -1444,7 +1444,12 @@ export default class BaseLayout
     {
         this.setupSubLayer('playerItemsPickupLayer', false);
         let itemId      = 'Desc_SpitterParts_C';
-            if(currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C' || currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C')
+            if([
+                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C',
+                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CliffHogParts.BP_CliffHogParts_C',
+                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C',
+                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_NuclearHogParts.BP_NuclearHogParts_C'
+            ].includes(currentObject.className))
             {
                 itemId  = 'Desc_HogParts_C';
             }
