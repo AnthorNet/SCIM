@@ -2113,19 +2113,27 @@ export default class SaveParser_Write
                     property += this.writeInt(1);
                     property += this.writeObjectProperty(value.itemState);
 
-                    let currentBufferStartingLength     = this.currentBufferLength;
-                    let structPropertyBufferLength      = this.currentEntityLength;
-                    let itemStateProperties             = '';
-                        for(let i = 0; i < value.itemStateProperties.length; i++)
-                        {
-                            itemStateProperties += this.writeProperty(value.itemStateProperties[i]);
-                        }
-                        itemStateProperties += this.writeString('None');
+                    if(value.itemState.pathName === '/Script/FicsItNetworksComputer.FINItemStateFileSystem')
+                    {
+                        property += this.writeInt(value.FINItemStateFileSystem.length);
+                        property += this.writeHex(value.FINItemStateFileSystem);
+                    }
+                    else
+                    {
+                        let currentBufferStartingLength     = this.currentBufferLength;
+                        let structPropertyBufferLength      = this.currentEntityLength;
+                        let itemStateProperties             = '';
+                            for(let i = 0; i < value.itemStateProperties.length; i++)
+                            {
+                                itemStateProperties += this.writeProperty(value.itemStateProperties[i]);
+                            }
+                            itemStateProperties += this.writeString('None');
 
-                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                            this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
 
-                        property += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
-                        property += itemStateProperties;
+                            property += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
+                            property += itemStateProperties;
+                    }
                 }
                 else
                 {

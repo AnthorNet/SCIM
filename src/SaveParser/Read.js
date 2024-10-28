@@ -2128,16 +2128,23 @@ export default class SaveParser_Read
                     currentProperty.itemState             = this.readObjectProperty();
                     currentProperty.itemStateProperties   = [];
 
-                    this.readInt(); // itemStateLength
-                    while(true)
+                    if(currentProperty.itemState.pathName === '/Script/FicsItNetworksComputer.FINItemStateFileSystem')
                     {
-                        let property = this.readProperty();
-                            if(property === null)
-                            {
-                                break;
-                            }
+                        currentProperty.FINItemStateFileSystem = this.readHex(this.readInt());
+                    }
+                    else
+                    {
+                        this.readInt(); // itemStateLength
+                        while(true)
+                        {
+                            let property = this.readProperty();
+                                if(property === null)
+                                {
+                                    break;
+                                }
 
-                            currentProperty.itemStateProperties.push(property);
+                                currentProperty.itemStateProperties.push(property);
+                        }
                     }
                 }
         }
