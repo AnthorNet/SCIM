@@ -2426,10 +2426,12 @@ export default class SaveParser_Read
 
                             break;
 
-                        case '/Script/FactoryGame.PrefabSignData': // Skip!
-                        case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
-                        case '/Script/FactoryGame.InventoryItem': // Skip!
-                        case '/Script/FicsItNetworks.FINRailroadSignalBlock': // Skip!
+                         // Skip!
+                        case '/Script/FactoryGame.PrefabSignData':
+                        case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
+                        case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
+                        case '/Script/FactoryGame.InventoryItem':
+                        case '/Script/FicsItNetworks.FINRailroadSignalBlock':
 
                             break;
 
