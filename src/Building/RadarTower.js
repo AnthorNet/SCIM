@@ -227,16 +227,14 @@ export default class Building_RadarTower
                         weight      : radius
                     }).addTo(baseLayout.playerLayers.playerOrientationLayer.subLayer);
 
-                    if(baseLayout.satisfactoryMap.leafletMap.Building_RadarTower_zoomend === undefined)
-                    {
-                        baseLayout.satisfactoryMap.leafletMap.Building_RadarTower_zoomend = baseLayout.satisfactoryMap.leafletMap.on('zoomend', function(){
-                            if(marker.options.radiusMarker !== undefined)
-                            {
-                                Building_RadarTower.unbindTooltip(baseLayout, currentObject);
-                                Building_RadarTower.bindTooltip(baseLayout, currentObject, tooltipOptions);
-                            }
-                        });
-                    }
+                    marker.options.radiusEvent = function(){
+                        if(marker.options.radiusMarker !== undefined)
+                        {
+                            Building_RadarTower.unbindTooltip(baseLayout, currentObject);
+                            Building_RadarTower.bindTooltip(baseLayout, currentObject, tooltipOptions);
+                        }
+                    };
+                    baseLayout.satisfactoryMap.leafletMap.on('zoomend', marker.options.radiusEvent);
             }
     }
     static unbindTooltip(baseLayout, currentObject)
@@ -246,6 +244,9 @@ export default class Building_RadarTower
             {
                 baseLayout.playerLayers.playerOrientationLayer.subLayer.removeLayer(marker.options.radiusMarker);
                 delete marker.options.radiusMarker;
+
+                baseLayout.satisfactoryMap.leafletMap.off('zoomend', marker.options.radiusEvent);
+                delete marker.options.radiusEvent;
             }
     }
 }
