@@ -218,13 +218,25 @@ export default class Building_RadarTower
                 let position    = [baseLayout.satisfactoryMap.unproject([0, 0]), baseLayout.satisfactoryMap.unproject([10000, 0])];
                 let meterWeight = baseLayout.satisfactoryMap.leafletMap.latLngToContainerPoint(position[1]).x - baseLayout.satisfactoryMap.leafletMap.latLngToContainerPoint(position[0]).x;
                 let radius      = Building_RadarTower.getCoverageRadius() / 10000 * meterWeight * 2;
-                marker.options.radiusMarker = L.circle(baseLayout.satisfactoryMap.unproject(currentObject.transform.translation), {
-                    interactive : false,
-                    opacity     : 0.25,
-                    color       : '#FA9549',
-                    radius      : 0,
-                    weight      : radius
-                }).addTo(baseLayout.playerLayers.playerOrientationLayer.subLayer);
+
+                    marker.options.radiusMarker = L.circle(baseLayout.satisfactoryMap.unproject(currentObject.transform.translation), {
+                        interactive : false,
+                        opacity     : 0.25,
+                        color       : '#FA9549',
+                        radius      : 0,
+                        weight      : radius
+                    }).addTo(baseLayout.playerLayers.playerOrientationLayer.subLayer);
+
+                    if(baseLayout.satisfactoryMap.leafletMap.Building_RadarTower_zoomend === undefined)
+                    {
+                        baseLayout.satisfactoryMap.leafletMap.Building_RadarTower_zoomend = baseLayout.satisfactoryMap.leafletMap.on('zoomend', function(){
+                            if(marker.options.radiusMarker !== undefined)
+                            {
+                                Building_RadarTower.unbindTooltip(baseLayout, currentObject);
+                                Building_RadarTower.bindTooltip(baseLayout, currentObject, tooltipOptions);
+                            }
+                        });
+                    }
             }
     }
     static unbindTooltip(baseLayout, currentObject)
