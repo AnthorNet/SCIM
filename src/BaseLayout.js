@@ -28,6 +28,7 @@ import SubSystem_Schematic                      from './SubSystem/Schematic.js';
 import SubSystem_Statistics                     from './SubSystem/Statistics.js';
 import SubSystem_Time                           from './SubSystem/Time.js';
 import SubSystem_Unlock                         from './SubSystem/Unlock.js';
+import SubSystem_Vehicle                        from './SubSystem/Vehicle.js';
 import SubSystem_WorldGrid                      from './SubSystem/WorldGrid.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
@@ -373,6 +374,7 @@ export default class BaseLayout
             this.portalSubSystem        = new SubSystem_Portal({baseLayout: this});
             this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
             this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
+            this.vehicleSubSystem       = new SubSystem_Vehicle({baseLayout: this});
 
             if(this.buildingsData === null)
             {
@@ -2586,7 +2588,7 @@ export default class BaseLayout
                         {
                             pathName        : currentObject.pathName + '_vehicleTrackData',
                             originPathName  : currentObject.pathName,
-                            color           : '#FFC0CB',
+                            color           : Building_Vehicle.trackDataColor,
                             weight          : 2,
                             dashArray       : '15 5'
                         }
@@ -5037,7 +5039,7 @@ export default class BaseLayout
             let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
                 if(vehicleTrackDataMarker !== null)
                 {
-                    vehicleTrackDataMarker.setStyle({color: '#FFC0CB'});
+                    vehicleTrackDataMarker.setStyle({color: Building_Vehicle.trackDataColor});
                 }
         }
     }

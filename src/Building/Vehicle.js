@@ -4,6 +4,8 @@ import Modal_Vehicle_TrackData                  from '../Modal/Vehicle/TrackData
 
 export default class Building_Vehicle extends Building
 {
+    static get trackDataColor(){ return '#aa66cc'; }
+
     static getName(baseLayout, currentObject)
     {
         return currentObject.pathName.replace('Persistent_Level:PersistentLevel.', '');
