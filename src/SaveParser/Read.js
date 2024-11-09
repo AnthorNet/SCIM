@@ -2432,6 +2432,135 @@ export default class SaveParser_Read
                         case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
                         case '/Script/FactoryGame.InventoryItem':
                         case '/Script/FicsItNetworks.FINRailroadSignalBlock':
+                        case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+
+                            break;
+
+                        case '/Script/FicsItNetworks.FINGPUT1Buffer':
+                            structure.x         = this.readInt();
+                            structure.y         = this.readInt();
+                            structure.size      = this.readInt();
+                            structure.name      = this.readString();
+                            structure.type      = this.readString();
+                            structure.length    = this.readInt();
+                            structure.buffer    = [];
+                                for(let size = 0; size < structure.size; size++)
+                                {
+                                    structure.buffer.push(this.readFINGPUT1BufferPixel());
+                                }
+                            structure.unk3      = this.readHex(45); //TODO: Not sure at all!
+
+                            break;
+                        default:
+                            this.worker.postMessage({command: 'alertParsing'});
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.setContext('currentData', data);
+                            }
+
+                            console.log('Unimplemented `' + structure.unk2 + '` in readFINLuaProcessorStateStorage');
+                            // Instead of throwing an error, we'll skip this structure
+                            break;
+                    }
+
+                    data.structs.push(structure);
+            }
+
+        return data;
+    }
+    {
+        let data            = {trace: [], reference: [], structs: []};
+        let countTrace      = this.readInt();
+            for(let i = 0; i < countTrace; i++)
+            {
+                data.trace.push(this.readFINNetworkTrace());
+            }
+
+        let countReference  = this.readInt();
+            for(let i = 0; i < countReference; i++)
+            {
+                data.reference.push({
+                    levelName: this.readString(),
+                    pathName: this.readString()
+                });
+            }
+
+        data.thread         = this.readString();
+        data.globals        = this.readString();
+
+        let countStructs    = this.readInt();
+            data.structs    = [];
+
+            for(let i = 0; i < countStructs; i++)
+            {
+                let structure = {};
+                    structure.unk1  = this.readInt();
+                    structure.unk2  = this.readString();
+
+                    switch(structure.unk2)
+                    {
+                        case '/Script/CoreUObject.Vector':
+                            structure.x         = this.readFloat();
+                            structure.y         = this.readFloat();
+                            structure.z         = this.readFloat();
+
+                            break;
+
+                        case '/Script/CoreUObject.Vector2D':
+                            structure.x         = this.readDouble();
+                            structure.y         = this.readDouble();
+
+                            break;
+
+                        case '/Script/CoreUObject.LinearColor':
+                            structure.r         = this.readFloat();
+                            structure.g         = this.readFloat();
+                            structure.b         = this.readFloat();
+                            structure.a         = this.readFloat();
+
+                            break;
+
+                        case '/Script/FactoryGame.InventoryStack':
+                            if(this.header.saveVersion >= 42)
+                            {
+                                structure.unk3      = this.readString();
+                                structure.unk4      = this.readString();
+                                structure.unk5      = this.readInt();
+                                structure.unk6      = this.readInt();
+                                structure.unk7      = this.readStructProperty(structure, structure.unk2);
+                                structure.unk8      = this.readString();
+                            }
+                            else
+                            {
+                                structure.unk3      = this.readInt();
+                                structure.unk4      = this.readString();
+
+                                structure.unk5      = this.readInt();
+                                structure.unk6      = this.readInt();
+                                structure.unk7      = this.readInt();
+                            }
+
+                            break;
+
+                        case '/Script/FactoryGame.ItemAmount':
+                            structure.unk3      = this.readInt();
+                            structure.unk4      = this.readString();
+                            structure.unk5      = this.readInt();
+
+                            break;
+
+                        case '/Script/FicsItNetworks.FINTrackGraph':
+                            structure.trace     = this.readFINNetworkTrace();
+                            structure.trackId   = this.readInt();
+
+                            break;
+
+                         // Skip!
+                        case '/Script/FactoryGame.PrefabSignData':
+                        case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
+                        case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
+                        case '/Script/FactoryGame.InventoryItem':
+                        case '/Script/FicsItNetworks.FINRailroadSignalBlock':
 
                             break;
 
