@@ -2426,15 +2426,6 @@ export default class SaveParser_Read
 
                             break;
 
-                         // Skip!
-                        case '/Script/FactoryGame.PrefabSignData':
-                        case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
-                        case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
-                        case '/Script/FactoryGame.InventoryItem':
-                        case '/Script/FicsItNetworks.FINRailroadSignalBlock':
-
-                            break;
-
                         case '/Script/FicsItNetworks.FINGPUT1Buffer':
                             structure.x         = this.readInt();
                             structure.y         = this.readInt();
@@ -2450,6 +2441,17 @@ export default class SaveParser_Read
                             structure.unk3      = this.readHex(45); //TODO: Not sure at all!
 
                             break;
+
+                         // Skip!
+                        case '/Script/FactoryGame.PrefabSignData':
+                        case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
+                        case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
+                        case '/Script/FactoryGame.InventoryItem':
+                        case '/Script/FicsItNetworks.FINRailroadSignalBlock':
+                        case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+
+                            break;
+
                         default:
                             this.worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
