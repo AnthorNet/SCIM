@@ -341,11 +341,14 @@ export default class BaseLayout_ContextMenu
 
                     if(buildingData.category !== 'light' && buildingData.category !== 'tower' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                     {
-                        contextMenu.push({
-                            icon        : 'fa-tachometer-alt-slow',
-                            text        : this.baseLayout.translate._('Update clock speed'),
-                            callback    : this.baseLayout.overclockingSubSystem.updateObjectClockSpeed
-                        });
+                        if(this.baseLayout.unlockSubSystem.haveOverclocking() === true)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-tachometer-alt-slow',
+                                text        : this.baseLayout.translate._('Update clock speed'),
+                                callback    : this.baseLayout.overclockingSubSystem.updateObjectClockSpeed
+                            });
+                        }
                     }
 
                     /*

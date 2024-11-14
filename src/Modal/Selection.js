@@ -297,7 +297,7 @@ export default class Modal_Selection
             if(markers !== null && markers.length > 0)
             {
                 inputOptions.push({text: 'Delete selected items', value: 'delete'});
-                inputOptions.push({text: 'Update selected buildings color slot', value: 'colorSlot'});
+                inputOptions.push({text: 'Update selected buildings color swatch', value: 'colorSlot'});
                 inputOptions.push({text: 'Update selected buildings custom color', value: 'customColor'});
 
                 inputOptions.push({group: 'Positioning', text: 'Move selected items position', value: 'moveTo'});
@@ -310,7 +310,10 @@ export default class Modal_Selection
 
                 if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
                 {
-                    inputOptions.push({group: 'Power/Overclocking', text: 'Set selected machines clock speed', value: 'clockSpeed'});
+                    if(baseLayout.unlockSubSystem.haveOverclocking() === true)
+                    {
+                        inputOptions.push({group: 'Power/Overclocking', text: 'Set selected machines clock speed', value: 'clockSpeed'});
+                    }
 
                     inputOptions.push({ group: 'Power/Overclocking', text: 'Turn on selected machines', value: 'Building_PowerSwitch_turnOn' });
                     inputOptions.push({ group: 'Power/Overclocking', text: 'Turn off selected machines', value: 'Building_PowerSwitch_turnOff' });
@@ -1086,7 +1089,12 @@ export default class Modal_Selection
 
                                     if(currentClockSpeed !== clockSpeed)
                                     {
-                                        baseLayout.overclockingSubSystem.updateClockSpeed(currentObject, clockSpeed, parseInt(values.useOwnPowershards));
+                                        let result = baseLayout.overclockingSubSystem.updateClockSpeed(currentObject, clockSpeed, parseInt(values.useOwnPowershards), true);
+                                            if(result === false)
+                                            {
+                                                BaseLayout_Modal.alert('We could not find enough "Power Shards" in your containers, not all buildings were overclocked.');
+                                                return;
+                                            }
                                     }
                                 }
                             }

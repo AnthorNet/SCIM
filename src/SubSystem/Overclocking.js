@@ -25,16 +25,61 @@ export default class SubSystem_Overclocking
        return 1;
     }
 
-    updateClockSpeed(currentObject, clockSpeed, useOwnPowershards = false)
+    updateClockSpeed(currentObject, clockSpeed, useOwnPowershards = false, isFromSelection = false)
     {
             clockSpeed          = Math.max(1, Math.min(Math.round(clockSpeed * 1000000) / 1000000, 250));
         let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
+        let stopLooking         = false;
 
         if(totalPowerShards > 0)
         {
-            let potentialInventory = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
+            let potentialInventory  = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
                 if(potentialInventory !== null)
                 {
+                    let mInventoryStacks  = this.baseLayout.getObjectProperty(potentialInventory, 'mInventoryStacks');
+                        if(mInventoryStacks === null)
+                        {
+                            potentialInventory.properties.push({
+                                name    : "mInventoryStacks",
+                                type    : "Array",
+                                value   : {
+                                        type    : "Struct",
+                                        values  : [
+                                            [{
+                                                name: "Item",
+                                                type: "Struct",
+                                                value: {
+                                                    type        : "InventoryItem",
+                                                    itemName    : { levelName: "", pathName: "" },
+                                                    properties  : [{ name: "NumItems", type: "Int", value: 0 }]
+                                                }
+                                            }],
+                                            [{
+                                                name: "Item",
+                                                type: "Struct",
+                                                value: {
+                                                    type        : "InventoryItem",
+                                                    itemName    : { levelName: "", pathName: "" },
+                                                    properties  : [{ name: "NumItems", type: "Int", value: 0 }]
+                                                }
+                                            }],
+                                            [{
+                                                name: "Item",
+                                                type: "Struct",
+                                                value: {
+                                                    type        : "InventoryItem",
+                                                    itemName    : { levelName: "", pathName: "" },
+                                                    properties  : [{ name: "NumItems", type: "Int", value: 0 }]
+                                                }
+                                            }]
+                                        ]
+                                    },
+                                structureSubType: "InventoryStack"
+                            });
+
+                            console.log('Adding missing mInventoryStacks to: ' + currentObject.pathName);
+                        }
+
                     for(let i = 0; i < potentialInventory.properties.length; i++)
                     {
                         if(potentialInventory.properties[i].name === 'mInventoryStacks')
@@ -46,7 +91,11 @@ export default class SubSystem_Overclocking
                                     let result = this.baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
                                         if(result === false)
                                         {
-                                            clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+                                            console.log('No power shard found for "' + currentObject.pathName + '"... Stopping!');
+
+                                            stopLooking = true;
+                                            clockSpeed  = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+
                                             break;
                                         }
                                 }
@@ -54,6 +103,11 @@ export default class SubSystem_Overclocking
                                 potentialInventory.properties[i].value.values[j][0].value.itemName.pathName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
                                 this.baseLayout.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'Int');
                             }
+                        }
+
+                        if(stopLooking === true && isFromSelection === false)
+                        {
+                            BaseLayout_Modal.alert('We could not find enough "Power Shards" in your containers, the buidling was not totally overclocked.');
                         }
                     }
                 }
@@ -110,6 +164,10 @@ export default class SubSystem_Overclocking
                 }
         }
 
+        if(stopLooking === true && isFromSelection === true)
+        {
+            return false;
+        }
 
         return true;
     }
