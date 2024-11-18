@@ -194,7 +194,7 @@ export default class Modal_Map_GameRules
 
             if(this.baseLayout.saveGameParser.header.saveHeaderType >= 8)
             {
-                if($('#inputIsCreativeModeEnabled').is(':checked') === true)
+                if($('#inputIsModdedSave').is(':checked') === true)
                 {
                     this.baseLayout.saveGameParser.header.isModdedSave = 1;
                 }
