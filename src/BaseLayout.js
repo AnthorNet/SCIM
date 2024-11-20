@@ -273,6 +273,24 @@ export default class BaseLayout
                 {
                     this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
                 }
+
+                // RESET NODES
+                if(this.satisfactoryMap.collectableMarkers[pathName].options.purity !== undefined)
+                {
+                    if(this.showNodesOnMiners === false)
+                    {
+                        if(this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[pathName]) === false)
+                        {
+                            this.satisfactoryMap.collectableMarkers[pathName].addTo(
+                                this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[pathName].options.layerId]
+                            );
+                        }
+                    }
+                    else
+                    {
+                        this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
+                    }
+                }
             }
 
             delete this.satisfactoryMap.collectableMarkers[pathName].options.extractorPathName;
@@ -840,6 +858,10 @@ export default class BaseLayout
                             }
                     }
                 }
+                else
+                {
+                    console.log('Unknown collectable?', currentObject)
+                }
 
                 this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
 
@@ -854,6 +876,7 @@ export default class BaseLayout
 
                 continue;
             }
+
 
             if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
             {

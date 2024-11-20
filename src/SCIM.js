@@ -42,7 +42,7 @@ export default class SCIM
         this.translate                  = null;
     }
 
-    start(remoteUrl)
+    start(remoteUrl = null)
     {
         if(this.urlScriptsVERSION !== null)
         {

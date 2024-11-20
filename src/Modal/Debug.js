@@ -12,6 +12,11 @@ export default class Modal_Debug
         let childrenPathName    = [];
         let extraPathName       = [];
 
+        if(currentObject === null)
+        {
+            return;
+        }
+
         if(currentObject.children !== undefined)
         {
             for(let i = 0; i < currentObject.children.length; i++)

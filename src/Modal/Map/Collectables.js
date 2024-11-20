@@ -13,8 +13,6 @@ export default class Modal_Map_Collectables
         let html                = [];
         let playerCollectables  = this.baseLayout.collectablesSubSystem.get();
 
-        html.push('<div class="alert alert-danger text-center">Reset and Clear function are disabled for some types as we need to handle the new format.</div>')
-
         html.push('<table class="table mb-0">');
 
         for(let className in playerCollectables)
@@ -40,24 +38,14 @@ export default class Modal_Map_Collectables
                     html.push('</td>');
 
                     html.push('<td class="text-right" width="20%">');
-
-                    let updatableCollectables = [
-                            '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C',
-                            '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C',
-                            '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
-                            '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C'
-                        ];
-                        if(updatableCollectables.includes(className))
-                        {
-                            if(currentItem.used > 0)
-                            {
-                                html.push('<button class="btn btn-danger btn-sm resetCollectables" data-id="' + className + '">Reset</button>');
-                            }
-                            if((currentItem.markers.length - currentItem.used) > 0)
-                            {
-                                html.push('<button class="btn btn-success btn-sm clearCollectables" data-id="' + className + '">Clear</button>');
-                            }
-                        }
+                    if(currentItem.used > 0)
+                    {
+                        html.push('<button class="btn btn-danger btn-sm resetCollectables" data-id="' + className + '">Reset</button>');
+                    }
+                    if((currentItem.markers.length - currentItem.used) > 0)
+                    {
+                        html.push('<button class="btn btn-success btn-sm clearCollectables" data-id="' + className + '">Clear</button>');
+                    }
                     html.push('</td>');
 
                     html.push('</tr>');

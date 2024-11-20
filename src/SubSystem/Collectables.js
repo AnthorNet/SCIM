@@ -180,7 +180,7 @@ export default class SubSystem_Collectables
             default:
                 for(let m = 0; m < this.collectables[className].markers.length; m++)
                 {
-                    this.reset(this.collectables[className].markers[m].pathName);
+                    this.reset(this.collectables[className].markers[m].pathName, className);
                 }
         }
     }
@@ -192,7 +192,7 @@ export default class SubSystem_Collectables
             baseLayout.collectablesSubSystem.get();
     }
 
-    reset(pathName)
+    reset(pathName, className = null)
     {
         let currentObject = this.baseLayout.saveGameParser.getTargetObject(pathName);
             if(currentObject !== null)
@@ -217,27 +217,57 @@ export default class SubSystem_Collectables
                         this.baseLayout.deleteObjectProperty(currentObject, 'mPickupItems');
 
                         return;
+                }
+            }
 
-                    default:
-                        let collectables        = this.baseLayout.saveGameParser.getCollectables();
-                        let collectedStatus     = this.getStatusFromPathName(pathName);
-                            if(collectedStatus === true)
+        if(className !== null)
+        {
+            let collectables        = this.baseLayout.saveGameParser.getCollectables();
+            let collectedStatus     = this.getStatusFromPathName(pathName);
+                if(collectedStatus === true)
+                {
+                    for(let i = (collectables.length - 1); i >= 0; i--)
+                    {
+                        if(pathName === collectables[i].pathName)
+                        {
+                            // Removes from collectables...
+                            collectables.splice(i, 1);
+
+                            //TODO: Recreate the object...?
+
+                            // Mercer shrine
+                            //console.log(collectables[i], className, pathName)
+                            if(className === '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C')
                             {
-                                for(let i = (collectables.length - 1); i >= 0; i--)
-                                {
-                                    if(pathName === collectables[i].pathName)
+                                let haveShrine = null;
+                                    for(let i = 0; i < this.collectables[className].markers.length; i++)
                                     {
-                                        // Removes from collectables...
-                                        collectables.splice(i, 1);
+                                        if(this.collectables[className].markers[i].pathName === pathName && this.collectables[className].markers[i].shrinePathName !== undefined)
+                                        {
+                                            haveShrine = this.collectables[className].markers[i].shrinePathName;
+                                            break;
+                                        }
+                                    }
 
-                                        //TODO: Recreate the object...
 
-                                        return;
+                                if(haveShrine !== null)
+                                {
+                                    for(let j = (collectables.length - 1); j >= 0; j--)
+                                    {
+                                        if(haveShrine === collectables[j].pathName)
+                                        {
+                                            collectables.splice(j, 1);
+                                            return;
+                                        }
                                     }
                                 }
                             }
+
+                            return;
+                        }
+                    }
                 }
-            }
+        }
     }
 
     clearAll(className)
@@ -255,7 +285,7 @@ export default class SubSystem_Collectables
             default:
                 for(let m = 0; m < this.collectables[className].markers.length; m++)
                 {
-                    this.clear(this.collectables[className].markers[m].pathName, className);
+                    this.clear(this.collectables[className].markers[m].pathName);
                 }
         }
     }
@@ -267,7 +297,7 @@ export default class SubSystem_Collectables
             baseLayout.collectablesSubSystem.get();
     }
 
-    clear(pathName, className = null)
+    clear(pathName)
     {
         let currentObject = this.baseLayout.saveGameParser.getTargetObject(pathName);
             if(currentObject !== null)
@@ -302,31 +332,54 @@ export default class SubSystem_Collectables
 
                         return;
                 }
-            }
 
-        if(className !== null && this.collectables[className].needDiscovery === undefined)
-        {
-            let collectables            = this.baseLayout.saveGameParser.getCollectables();
-            let collectableAlreadyIn    = false;
-                for(let i = (collectables.length - 1); i >= 0; i--)
-                {
-                    if(this.collectables[className].markers[m].pathName === collectables[i].pathName)
+                let collectables            = this.baseLayout.saveGameParser.getCollectables();
+                    for(let i = (collectables.length - 1); i >= 0; i--)
                     {
-                        collectableAlreadyIn = true;
-                        break;
+                        if(pathName === collectables[i].pathName)
+                        {
+                            return;
+                        }
                     }
-                }
 
-                if(collectableAlreadyIn === false)
-                {
-                    let levelName = this.collectables[className].markers[m].pathName.split(':');
-                        console.log(levelName, this.baseLayout.saveGameParser.levels);
+                    let levelName = (currentObject.levelName !== undefined) ? [currentObject.levelName] : pathName.split(':');
                         collectables.push({
                             levelName   : levelName.shift(),
-                            pathName    : this.collectables[className].markers[m].pathName
+                            pathName    : pathName
                         });
-                }
-        }
+
+                    // Delete actor from the save
+                    this.baseLayout.saveGameParser.deleteObject(pathName);
+
+                    // Mercer shrine
+                    if(currentObject.className === '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C')
+                    {
+                        let haveShrine = null;
+                            for(let i = 0; i < this.collectables[currentObject.className].markers.length; i++)
+                            {
+                                if(this.collectables[currentObject.className].markers[i].pathName === pathName && this.collectables[currentObject.className].markers[i].shrinePathName !== undefined)
+                                {
+                                    haveShrine = this.collectables[currentObject.className].markers[i].shrinePathName;
+                                    break;
+                                }
+                            }
+
+
+                        if(haveShrine !== null)
+                        {
+                            let currentShrine = this.baseLayout.saveGameParser.getTargetObject(haveShrine);
+                                if(currentShrine !== null)
+                                {
+                                    let levelName = (currentShrine.levelName !== undefined) ? [currentShrine.levelName] : haveShrine.split(':');
+                                        collectables.push({
+                                            levelName   : levelName.shift(),
+                                            pathName    : haveShrine
+                                        });
+                                    this.baseLayout.saveGameParser.deleteObject(haveShrine);
+                                }
+                        }
+                    }
+            }
     }
 
     getStatusFromPathName(pathName)

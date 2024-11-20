@@ -158,28 +158,25 @@ export default class BaseLayout_ContextMenu
                             text        : 'Consumable'
                         });
 
-                        if(['/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C', '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C'].includes(currentObject.className))
-                        {
-                            let collectedStatus = this.baseLayout.collectablesSubSystem.getStatusFromPathName(currentObject.pathName);
-                                if(collectedStatus === true)
-                                {
-                                    contextMenu.push({
-                                        icon        : 'fa-acorn',
-                                        text        : 'Respawn',
-                                        callback    : this.baseLayout.collectablesSubSystem.resetMarker
-                                    });
-                                }
-                                else
-                                {
-                                    contextMenu.push({
-                                        icon        : 'fa-acorn',
-                                        text        : 'Collect',
-                                        callback    : this.baseLayout.collectablesSubSystem.clearMarker
-                                    });
-                                }
+                        let consumableStatus = this.baseLayout.collectablesSubSystem.getStatusFromPathName(currentObject.pathName);
+                            if(consumableStatus === true)
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-acorn',
+                                    text        : 'Respawn',
+                                    callback    : this.baseLayout.collectablesSubSystem.resetMarker
+                                });
+                            }
+                            else
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-acorn',
+                                    text        : 'Collect',
+                                    callback    : this.baseLayout.collectablesSubSystem.clearMarker
+                                });
+                            }
 
-                            contextMenu.push('-');
-                        }
+                        contextMenu.push('-');
 
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
@@ -187,6 +184,7 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.teleportPlayer
                         });
                         break;
+
                     case '/Script/FactoryGame.FGItemPickup_Spawnable':
                     case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_SpitterParts.BP_SpitterParts_C':
@@ -221,16 +219,40 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.deleteItemPickUp
                         });
                         break;
-                    case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
-                    case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
-                    case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
-                    case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
-                    case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                     case '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C':
                     case '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C':
                     case '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C':
                     case '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C':
                     case '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C':
+                        contextMenu.push({
+                            text        : 'Collectable'
+                        });
+
+                        let collectedStatus = this.baseLayout.collectablesSubSystem.getStatusFromPathName(currentObject.pathName);
+                            if(collectedStatus === true)
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-acorn',
+                                    text        : 'Respawn',
+                                    callback    : this.baseLayout.collectablesSubSystem.resetMarker
+                                });
+                            }
+                            else
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-acorn',
+                                    text        : 'Collect',
+                                    callback    : this.baseLayout.collectablesSubSystem.clearMarker
+                                });
+                            }
+
+                        contextMenu.push('-');
+
+                    case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
+                    case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
+                    case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
+                    case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
+                    case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
