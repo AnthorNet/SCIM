@@ -4,7 +4,7 @@ import Modal_Vehicle_TrackData                  from '../Modal/Vehicle/TrackData
 
 export default class Building_Vehicle extends Building
 {
-    static get trackDataColor(){ return '#aa66cc'; }
+    static get trackDataColor(){ return '#7F4C98'; }
 
     static getName(baseLayout, currentObject)
     {
