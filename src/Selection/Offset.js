@@ -34,6 +34,7 @@ export default class Selection_Offset
             console.time('offsetMultipleMarkers');
             let offsetResults   = [];
             let historyPathName = [];
+            let offsetProxy     = [];
 
             for(let i = 0; i < this.markers.length; i++)
             {
@@ -104,6 +105,12 @@ export default class Selection_Offset
                                         conveyorChainActorSubsystem.killMe();
                                 }
 
+                            let haveProxy = this.baseLayout.blueprintSubSystem.haveProxy(currentObject);
+                                if(haveProxy !== null && offsetProxy.includes(haveProxy.pathName) === false)
+                                {
+                                    offsetProxy.push(haveProxy.pathName);
+                                }
+
                             offsetResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }
                 }
@@ -125,6 +132,29 @@ export default class Selection_Offset
                             }
                         }]
                     });
+                }
+
+                if(offsetProxy.length > 0)
+                {
+                    for(let i = 0; i < offsetProxy.length; i++)
+                    {
+                        let blueprintProxyObject = this.baseLayout.saveGameParser.getTargetObject(offsetProxy[i]);
+                            if(blueprintProxyObject !== null)
+                            {
+                                if(isNaN(this.offsetX) === false)
+                                {
+                                    blueprintProxyObject.transform.translation[0] += this.offsetX;
+                                }
+                                if(isNaN(this.offsetY) === false)
+                                {
+                                    blueprintProxyObject.transform.translation[1] += this.offsetY;
+                                }
+                                if(isNaN(this.offsetZ) === false)
+                                {
+                                    blueprintProxyObject.transform.translation[2] += this.offsetZ;
+                                }
+                            }
+                    }
                 }
 
                 console.timeEnd('offsetMultipleMarkers');

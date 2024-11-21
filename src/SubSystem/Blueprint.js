@@ -1,5 +1,7 @@
 import SubSystem                                from '../SubSystem.js';
 
+import Modal_Selection                          from '../Modal/Selection.js';
+
 export default class SubSystem_Blueprint extends SubSystem
 {
     constructor(options)
@@ -18,9 +20,20 @@ export default class SubSystem_Blueprint extends SubSystem
         }
     }
 
-    addToProxy(currentObject)
+    haveProxy(currentObject)
     {
         let mBlueprintProxy = this.baseLayout.getObjectProperty(currentObject, 'mBlueprintProxy');
+            if(mBlueprintProxy !== null)
+            {
+                return mBlueprintProxy;
+            }
+
+        return null;
+    }
+
+    addToProxy(currentObject)
+    {
+        let mBlueprintProxy = this.haveProxy(currentObject);
             if(mBlueprintProxy !== null)
             {
                 if(this.blueprintsProxies[mBlueprintProxy.pathName] === undefined)
@@ -34,7 +47,7 @@ export default class SubSystem_Blueprint extends SubSystem
 
     deleteFromProxy(currentObject)
     {
-        let mBlueprintProxy = this.baseLayout.getObjectProperty(currentObject, 'mBlueprintProxy');
+        let mBlueprintProxy = this.haveProxy(currentObject);
             if(mBlueprintProxy !== null)
             {
                 if(this.blueprintsProxies[mBlueprintProxy.pathName] !== undefined)
@@ -47,19 +60,6 @@ export default class SubSystem_Blueprint extends SubSystem
                             {
                                 this.blueprintsProxies[mBlueprintProxy.pathName].splice(i, 1);
 
-                                // Invalidate proxy bounding box
-                                /*
-                                let blueprintProxyObject = this.baseLayout.saveGameParser.getTargetObject(mBlueprintProxy.pathName);
-                                    if(blueprintProxyObject !== null)
-                                    {
-                                        let mLocalBounds = this.baseLayout.getObjectProperty(blueprintProxyObject, 'mLocalBounds');
-                                            if(mLocalBounds !== null)
-                                            {
-                                                mLocalBounds.isValid = 0;
-                                                console.log(mLocalBounds);
-                                            }
-                                    }
-                                /**/
                                 break;
                             }
                         }

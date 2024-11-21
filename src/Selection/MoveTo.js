@@ -26,16 +26,17 @@ export default class Selection_MoveTo
             gtag('event', 'MoveTo', {event_category: 'Selection'});
         }
 
-        return this.offset();
+        return this.moveTo();
     }
 
-    offset()
+    moveTo()
     {
         if(this.markers)
         {
             console.time('moveToMultipleMarkers');
             let moveToResults   = [];
             let historyPathName = [];
+            let moveToProxy     = [];
 
             for(let i = 0; i < this.markers.length; i++)
             {
@@ -106,6 +107,12 @@ export default class Selection_MoveTo
                                         conveyorChainActorSubsystem.killMe();
                                 }
 
+                            let haveProxy = this.baseLayout.blueprintSubSystem.haveProxy(currentObject);
+                                if(haveProxy !== null && moveToProxy.includes(haveProxy.pathName) === false)
+                                {
+                                    moveToProxy.push(haveProxy.pathName);
+                                }
+
                             moveToResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }
                 }
@@ -128,6 +135,29 @@ export default class Selection_MoveTo
                             }
                         }]
                     });
+                }
+
+                if(moveToProxy.length > 0)
+                {
+                    for(let i = 0; i < moveToProxy.length; i++)
+                    {
+                        let blueprintProxyObject = this.baseLayout.saveGameParser.getTargetObject(moveToProxy[i]);
+                            if(blueprintProxyObject !== null)
+                            {
+                                if(isNaN(this.moveToX) === false)
+                                {
+                                    blueprintProxyObject.transform.translation[0] += (this.moveToX - this.boundaries.centerX);
+                                }
+                                if(isNaN(this.moveToY) === false)
+                                {
+                                    blueprintProxyObject.transform.translation[1] += (this.moveToY - this.boundaries.centerY);
+                                }
+                                if(isNaN(this.moveToZ) === false)
+                                {
+                                    blueprintProxyObject.transform.translation[2] += (this.moveToZ - this.boundaries.centerZ);
+                                }
+                            }
+                    }
                 }
 
                 console.timeEnd('moveToMultipleMarkers');

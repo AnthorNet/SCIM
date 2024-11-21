@@ -173,6 +173,9 @@ export default class Building_PowerLine extends Building
                         baseLayout.playerLayers.playerPowerGridLayer.distance -= BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
                     }
                 }
+
+                // Clear blueprintProxy
+                baseLayout.blueprintSubSystem.deleteFromProxy(currentObject);
             }
 
         // Delete

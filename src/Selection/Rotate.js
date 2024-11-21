@@ -39,6 +39,7 @@ export default class Selection_Rotate
 
             let rotateResults   = [];
             let historyPathName = [];
+            let rotateProxy     = [];
 
             for(let i = 0; i < this.markers.length; i++)
             {
@@ -125,6 +126,12 @@ export default class Selection_Rotate
                                         conveyorChainActorSubsystem.killMe();
                                 }
 
+                            let haveProxy = this.baseLayout.blueprintSubSystem.haveProxy(currentObject);
+                                if(haveProxy !== null && rotateProxy.includes(haveProxy.pathName) === false)
+                                {
+                                    rotateProxy.push(haveProxy.pathName);
+                                }
+
                             rotateResults.push(this.baseLayout.refreshMarkerPosition(refreshProperties, true));
                         }
                 }
@@ -145,6 +152,26 @@ export default class Selection_Rotate
                             }
                         }]
                     });
+                }
+
+                if(rotateProxy.length > 0)
+                {
+                    for(let i = 0; i < rotateProxy.length; i++)
+                    {
+                        let blueprintProxyObject = this.baseLayout.saveGameParser.getTargetObject(rotateProxy[i]);
+                            if(blueprintProxyObject !== null)
+                            {
+                                let translationRotation = BaseLayout_Math.getPointRotation(
+                                        blueprintProxyObject.transform.translation,
+                                        [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
+                                        BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
+                                    );
+                                    blueprintProxyObject.transform.translation[0]  = translationRotation[0];
+                                    blueprintProxyObject.transform.translation[1]  = translationRotation[1];
+
+                                blueprintProxyObject.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(blueprintProxyObject.transform.rotation, this.angle);
+                            }
+                    }
                 }
 
                 console.timeEnd('rotateMultipleMarkers');

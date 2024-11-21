@@ -1113,7 +1113,7 @@ export default class SaveParser_Write
                     entity                 += this.writeInt8(data[i].customizationData.PatternRotation.value);
 
                     entity                 += this.writeObjectProperty(data[i].properties[0].value);
-                    entity                 += this.writeObjectProperty(data[i].properties[1].value);
+                    entity                 += this.writeObjectProperty(((data[i].properties[1] !== undefined) ? data[i].properties[1].value : {levelName: '', pathName: ''}));
                 }
 
                 let progress        = currentStep / countLightweightObjects * 100;

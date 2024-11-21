@@ -892,17 +892,16 @@ export default class SaveParser_Read
                                     PaintFinish         : this.readObjectProperty(),
                                     PatternRotation     : {value: this.readInt8()}
                                 },
-                                properties          : [
-                                    {
-                                        name            : 'mBuiltWithRecipe',
-                                        value           : this.readObjectProperty()
-                                    },
-                                    {
-                                        name            : 'mBlueprintProxy',
-                                        value           : this.readObjectProperty()
-                                    }
-                                ]
+                                properties          : [{
+                                    name            : 'mBuiltWithRecipe',
+                                    value           : this.readObjectProperty()
+                                }]
                             };
+                        let mBlueprintProxy = this.readObjectProperty();
+                            if(mBlueprintProxy.pathName !== '')
+                            {
+                                lightweightObject.properties.push({ name: 'mBlueprintProxy', value: mBlueprintProxy });
+                            }
 
                         // Skip already deleted actors...
                         if(lightweightObject.customizationData.SwatchDesc.pathName === '' || lightweightObject.properties[0].value.pathName === '')
