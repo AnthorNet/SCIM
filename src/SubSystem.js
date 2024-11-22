@@ -3,7 +3,21 @@ export default class SubSystem
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.subSystem          = this.baseLayout.saveGameParser.getTargetObject(options.pathName);
+
+        if(Array.isArray(options.pathName) === false)
+        {
+            options.pathName = [options.pathName];
+        }
+
+        for(let i = 0; i < options.pathName.length; i++)
+        {
+            this.subSystem = this.baseLayout.saveGameParser.getTargetObject(options.pathName[i]);
+
+            if(this.subSystem !== null)
+            {
+                break;
+            }
+        }
 
         if(this.subSystem === null)
         {

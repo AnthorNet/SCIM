@@ -663,8 +663,9 @@ export default class BaseLayout
                 /*
                 if(currentObject.className.includes('Subsystem'))
                 {
-                    console.log(currentObject)
+                    console.log('Subsystem', currentObject)
                 }
+                /**/
                 /*
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C')
                 {

@@ -4,11 +4,11 @@ export default class SubSystem_Unlock extends SubSystem
 {
     constructor(options)
     {
-        options.pathName        = 'Persistent_Level:PersistentLevel.UnlockSubsystem';
-            if(options.baseLayout.saveGameParser.header.saveVersion >= 41)
-            {
-                options.pathName        = 'Persistent_Level:PersistentLevel.unlockSubsystem';
-            }
+        options.pathName        = [
+            'Persistent_Level:PersistentLevel.unlockSubsystem',
+            'Persistent_Level:PersistentLevel.UnlockSubsystem'
+        ];
+        
         super(options);
     }
 

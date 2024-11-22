@@ -93,7 +93,11 @@ export default class SubSystem_Buildable extends SubSystem
 
     constructor(options)
     {
-        options.pathName        = 'Persistent_Level:PersistentLevel.BuildableSubsystem';
+        options.pathName        = [
+            'Persistent_Level:PersistentLevel.BuildableSubsystem',
+            'Persistent_Level:PersistentLevel.buildableSubsystem'
+        ];
+
         super(options);
     }
 

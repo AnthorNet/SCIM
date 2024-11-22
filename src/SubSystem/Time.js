@@ -4,7 +4,11 @@ export default class SubSystem_Time extends SubSystem
 {
     constructor(options)
     {
-        options.pathName        = 'Persistent_Level:PersistentLevel.TimeSubsystem';
+        options.pathName        = [
+            'Persistent_Level:PersistentLevel.TimeSubsystem',
+            'Persistent_Level:PersistentLevel.TimeSubSystem'
+        ];
+
         super(options);
     }
 
