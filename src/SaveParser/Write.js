@@ -1960,6 +1960,7 @@ export default class SaveParser_Write
                 break;
 
             case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
+            case 'FINLuaRuntimePersistenceState':
                 property += this.writeFINLuaProcessorStateStorage(currentProperty.value.values);
 
                 break;
@@ -2429,10 +2430,12 @@ export default class SaveParser_Write
             saveBinary += this.writeString(value.thread);
             saveBinary += this.writeString(value.globals);
 
-            saveBinary += this.writeInt(value.structs.length);
+            saveBinary += this.writeInt(value.version);
+            saveBinary += this.writeInt(value.structs.length - 1);
+
             for(let i = 0; i < value.structs.length; i++)
             {
-                saveBinary += this.writeInt(value.structs[i].unk1);
+                //saveBinary += this.writeInt(value.structs[i].unk1);
                 saveBinary += this.writeString(value.structs[i].unk2);
 
                 switch(value.structs[i].unk2)
@@ -2489,6 +2492,11 @@ export default class SaveParser_Write
                     case '/Script/FicsItNetworks.FINTrackGraph':
                         saveBinary += this.writeFINNetworkTrace(value.structs[i].trace);
                         saveBinary += this.writeInt(value.structs[i].trackId);
+
+                        break;
+
+                    case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+                        saveBinary += this.writeProperty(value.structs[i].property);
 
                         break;
 

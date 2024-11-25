@@ -1928,7 +1928,8 @@ export default class SaveParser_Read
                 break;
 
             case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
-                currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
+            case 'FINLuaRuntimePersistenceState':
+                currentProperty.value.values        = this.readFINLuaProcessorStateStorage(currentProperty.value.type);
 
                 break;
 
@@ -2336,8 +2337,40 @@ export default class SaveParser_Read
         return data;
     }
 
+
+    readFINLuaRuntimePersistenceState()
+    {
+        let data            = {trace: [], reference: []};
+
+        let countTrace      = this.readInt();
+            for(let i = 0; i < countTrace; i++)
+            {
+                data.trace.push(this.readFINNetworkTrace());
+            }
+
+        let countReference  = this.readInt();
+            for(let i = 0; i < countReference; i++)
+            {
+                data.reference.push({
+                    levelName: this.readString(),
+                    pathName: this.readString()
+                });
+            }
+
+        data.thread         = this.readString();
+        data.globals        = this.readString();
+
+        let countStructs    = this.readInt();
+        console.log(countStructs, data);
+        console.log(this.readInt())
+        console.log(this.readString())
+
+        return data;
+    }
+
     // https://github.com/CoderDE/FicsIt-Networks/blob/master/Source/FicsItNetworks/FicsItKernel/Processor/Lua/LuaProcessorStateStorage.cpp#L6
-    readFINLuaProcessorStateStorage()
+    // https://github.com/Panakotta00/FicsIt-Networks/blob/ce414aeb2eaf3acc82f2f3bc22b7ac76258ea663/Source/FicsItNetworksLua/Private/FINLuaRuntimePersistence.cpp#L8
+    readFINLuaProcessorStateStorage(type)
     {
         let data            = {trace: [], reference: [], structs: []};
         let countTrace      = this.readInt();
@@ -2358,13 +2391,12 @@ export default class SaveParser_Read
         data.thread         = this.readString();
         data.globals        = this.readString();
 
+        data.version        = this.readInt();
         let countStructs    = this.readInt();
-            data.structs    = [];
-
-            for(let i = 0; i < countStructs; i++)
+            for(let i = 0; i <= countStructs; i++)
             {
                 let structure = {};
-                    structure.unk1  = this.readInt();
+                    //structure.unk1  = this.readInt();
                     structure.unk2  = this.readString();
 
                     switch(structure.unk2)
@@ -2441,13 +2473,17 @@ export default class SaveParser_Read
 
                             break;
 
+                        case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+                            structure.property = this.readProperty();
+
+                            break;
+
                          // Skip!
                         case '/Script/FactoryGame.PrefabSignData':
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
                         case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
                         case '/Script/FactoryGame.InventoryItem':
                         case '/Script/FicsItNetworks.FINRailroadSignalBlock':
-                        case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
 
                             break;
 
