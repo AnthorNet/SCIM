@@ -46,7 +46,14 @@ export default class Modal_Object_Pattern
             {
                 if(currentObject.customizationData !== undefined)
                 {
-                    currentObject.customizationData.PatternDesc.pathName = values.PatternDesc;
+                    if(values.PatternDesc !== 'NULL')
+                    {
+                        currentObject.customizationData.PatternDesc.pathName = values.PatternDesc;
+                    }
+                    else
+                    {
+                        currentObject.customizationData.PatternDesc.pathName = '';
+                    }
                 }
                 else
                 {
