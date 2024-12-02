@@ -152,11 +152,13 @@ export default class SubSystem_Buildable extends SubSystem
 
                     switch(currentSwatchDesc)
                     {
+                        // Hidden slots...
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
                             return 16;
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
                             return 18;
 
+                        // Finishes
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_CarbonSteel.PaintFinishDesc_CarbonSteel_C':
                             return 19;
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Caterium.PaintFinishDesc_Caterium_C':
@@ -166,6 +168,15 @@ export default class SubSystem_Buildable extends SubSystem
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Copper.PaintFinishDesc_Copper_C':
                             return 22;
 
+                        // Redirected swatches
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot18.SwatchDesc_Slot18_C':
+                            return 24;
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot19.SwatchDesc_Slot19_C':
+                            return 25;
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot20.SwatchDesc_Slot20_C':
+                            return 26;
+
+                        // Project Assembly
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_ProjectAssembly.SwatchDesc_ProjectAssembly_C':
                             return 27;
 
@@ -238,11 +249,11 @@ export default class SubSystem_Buildable extends SubSystem
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C';
                     break;
 
-
                 case 18:
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C';
                     break;
 
+                // Finishes
                 case 19:
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_CarbonSteel.PaintFinishDesc_CarbonSteel_C';
                     break;
@@ -256,6 +267,18 @@ export default class SubSystem_Buildable extends SubSystem
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Copper.PaintFinishDesc_Copper_C';
                     break;
 
+                // Redirected swatches
+                case 24:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot18.SwatchDesc_Slot18_C';
+                    break;
+                case 25:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot19.SwatchDesc_Slot19_C';
+                    break;
+                case 26:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot20.SwatchDesc_Slot20_C';
+                    break;
+
+                // Project Assembly
                 case 27:
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_ProjectAssembly.SwatchDesc_ProjectAssembly_C';
                     break;

@@ -673,14 +673,13 @@ export default class Modal_Selection
             for(let slotIndex = 0; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
                 let inGameSlot = (slotIndex >= 16) ? slotIndex + 8 : slotIndex;
-
-                selectOptions.push({
-                    fullWidth       : ((slotIndex === 0) ? true : false),
-                    primaryColor    : 'rgb(' + playerColorsHelpers[inGameSlot].primaryColor.r + ', ' + playerColorsHelpers[inGameSlot].primaryColor.g + ', ' + playerColorsHelpers[inGameSlot].primaryColor.b + ')',
-                    secondaryColor  : 'rgb(' + playerColorsHelpers[inGameSlot].secondaryColor.r + ', ' + playerColorsHelpers[inGameSlot].secondaryColor.g + ', ' + playerColorsHelpers[inGameSlot].secondaryColor.b + ')',
-                    value           : inGameSlot,
-                    text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
-                });
+                    selectOptions.push({
+                        fullWidth       : ((slotIndex === 0) ? true : false),
+                        primaryColor    : 'rgb(' + playerColorsHelpers[inGameSlot].primaryColor.r + ', ' + playerColorsHelpers[inGameSlot].primaryColor.g + ', ' + playerColorsHelpers[inGameSlot].primaryColor.b + ')',
+                        secondaryColor  : 'rgb(' + playerColorsHelpers[inGameSlot].secondaryColor.r + ', ' + playerColorsHelpers[inGameSlot].secondaryColor.g + ', ' + playerColorsHelpers[inGameSlot].secondaryColor.b + ')',
+                        value           : inGameSlot,
+                        text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
+                    });
             }
 
         BaseLayout_Modal.form({
@@ -779,13 +778,14 @@ export default class Modal_Selection
         let selectOptionsColors = [];
             for(let slotIndex = 0; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
-                selectOptionsColors.push({
-                    fullWidth       : ((slotIndex === 0) ? true : false),
-                    primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
-                    secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
-                    value           : slotIndex,
-                    text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
-                });
+                let inGameSlot = (slotIndex >= 16) ? slotIndex + 8 : slotIndex;
+                    selectOptionsColors.push({
+                        fullWidth       : ((slotIndex === 0) ? true : false),
+                        primaryColor    : 'rgb(' + playerColors[inGameSlot].primaryColor.r + ', ' + playerColors[inGameSlot].primaryColor.g + ', ' + playerColors[inGameSlot].primaryColor.b + ')',
+                        secondaryColor  : 'rgb(' + playerColors[inGameSlot].secondaryColor.r + ', ' + playerColors[inGameSlot].secondaryColor.g + ', ' + playerColors[inGameSlot].secondaryColor.b + ')',
+                        value           : inGameSlot,
+                        text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
+                    });
             }
             selectOptionsColors.push({
                 fullWidth       : true,
