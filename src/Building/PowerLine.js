@@ -8,7 +8,8 @@ export default class Building_PowerLine extends Building
 {
     static clipboard = {source: null, target: null};
 
-    static get availableConnections(){
+    static get availableConnections()
+    {
         return [
             '.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2',
             '.PowerTowerConnection',
@@ -153,14 +154,14 @@ export default class Building_PowerLine extends Building
                 let currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
                     if(currentObjectSource !== null)
                     {
-                        Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectSource, currentObject);
+                        Building_PowerLine.unlinkConnection(baseLayout, currentObjectSource, currentObject);
                     }
 
                 // Unlink target power connection
                 let currentObjectTarget = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
                     if(currentObjectTarget !== null)
                     {
-                        Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectTarget, currentObject);
+                        Building_PowerLine.unlinkConnection(baseLayout, currentObjectTarget, currentObject);
                     }
 
                 if(currentObjectSource !== null && currentObjectTarget !== null)
@@ -324,9 +325,60 @@ export default class Building_PowerLine extends Building
             });
     }
 
-    static unlinkPowerConnection(baseLayout, currentObjectPowerConnection, targetObject)
+    static deleteWiresFromPowerConnection(baseLayout, currentObjectPowerConnection)
     {
-        let mWires              = baseLayout.getObjectProperty(currentObjectPowerConnection, 'mWires');
+        let currentObjectWires = baseLayout.getObjectProperty(currentObjectPowerConnection, 'mWires');
+            if(currentObjectWires !== null)
+            {
+                let wires = [];
+                    for(let i = 0; i < currentObjectWires.values.length; i++)
+                    {
+                        let wireMarker = baseLayout.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
+                            if(wireMarker === null) // Most likely a mod so try a larger search...
+                            {
+                                wireMarker = baseLayout.getMarkerFromPathName(currentObjectWires.values[i].pathName);
+                            }
+
+
+                        if(wireMarker !== null)
+                        {
+                            wireMarker.baseLayout   = baseLayout;
+                            wires.push(wireMarker);
+                        }
+                    }
+
+                if(wires.length > 0)
+                {
+                    for(let i = 0; i < wires.length; i++)
+                    {
+                        Building_PowerLine.delete(wires[i]);
+                    }
+                }
+            }
+    }
+
+    static redrawWiresFromPowerConnection(baseLayout, currentObjectPowerConnection, fastDelete)
+    {
+        let mWires = baseLayout.getObjectProperty(currentObjectPowerConnection, 'mWires');
+            if(mWires !== null)
+            {
+                for(let i = 0; i < mWires.values.length; i++)
+                {
+                    let currentWire = baseLayout.saveGameParser.getTargetObject(mWires.values[i].pathName);
+                        new Promise((resolve) => {
+                            baseLayout.parseObject(currentWire, resolve);
+                        }).then((result) => {
+                            let oldMarker = baseLayout.getMarkerFromPathName(currentWire.pathName, result.layer);
+                                baseLayout.deleteMarkerFromElements(result.layer, oldMarker, fastDelete);
+                                baseLayout.addElementToLayer(result.layer, result.marker);
+                        });
+                }
+            }
+    }
+
+    static unlinkConnection(baseLayout, currentObjectPowerConnection, targetObject)
+    {
+        let mWires = baseLayout.getObjectProperty(currentObjectPowerConnection, 'mWires');
             if(mWires !== null)
             {
                 for(let j = 0; j < mWires.values.length; j++)

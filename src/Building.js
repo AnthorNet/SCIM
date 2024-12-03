@@ -144,6 +144,7 @@ export default class Building
             || currentObject.className === '/AB_CableMod/Cables_Standard/Build_AB-PLStandard-Cu.Build_AB-PLStandard-Cu_C'
             || currentObject.className === '/AB_CableMod/Cables_Wire/Build_AB-PLWire-Si.Build_AB-PLWire-Si_C'
             || currentObject.className === '/AB_CableMod/Cables_Wire/Build_AB-PLWire-Au.Build_AB-PLWire-Au_C'
+            || currentObject.className === '/AB_CableMod/Cables_Wire/Build_AB-PLWire-Cu.Build_AB-PLWire-Cu_C'
         )
         {
             return true;

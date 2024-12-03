@@ -69,6 +69,8 @@ import Building_ResourceDeposit                 from './Building/ResourceDeposit
 import Building_Sign                            from './Building/Sign.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
+import Building_DigitalStorage_NetworkCable     from './Building/DigitalStorage/NetworkCable.js';
+
 import Lib_MapMarker                            from './Lib/L.MapMarker.js';
 
 export default class BaseLayout
@@ -1087,6 +1089,12 @@ export default class BaseLayout
             return resolve(Building_PowerLine.add(this, currentObject));
         }
 
+        // Network cable mods
+        if(currentObject.className === '/DigitalStorage/Buildables/NetworkCable/Build_DS_NetworkCable.Build_DS_NetworkCable_C')
+        {
+            return resolve(Building_DigitalStorage_NetworkCable.add(this, currentObject));
+        }
+
         if(
                 Building_Conveyor.isConveyorBelt(currentObject) || Building_Pipeline.isPipeline(currentObject)
              // Hyper tubes
@@ -1858,32 +1866,25 @@ export default class BaseLayout
             {
                 for(let j = 0; j < properties.object.children.length; j++)
                 {
-                    let currentObjectChildren   = this.saveGameParser.getTargetObject(properties.object.children[j].pathName);
-                    let availableConnections    = Building_PowerLine.availableConnections;
-                        if(currentObjectChildren !== null)
+                    let childrenPathName    = properties.object.children[j].pathName;
+                    let childrenType        = '.' + childrenPathName.split('.').pop();
+
+                        if(Building_PowerLine.availableConnections.indexOf(childrenType) !== -1)
                         {
-                            // Grab wires for redraw...
-                            for(let k = 0; k < availableConnections.length; k++)
-                            {
-                                if(currentObjectChildren.pathName.endsWith(availableConnections[k]))
+                            let currentObjectChildren = this.saveGameParser.getTargetObject(properties.object.pathName + childrenType);
+                                if(currentObjectChildren !== null)
                                 {
-                                    let mWires = this.getObjectProperty(currentObjectChildren, 'mWires');
-                                        if(mWires !== null)
-                                        {
-                                            for(let n = 0; n < mWires.values.length; n++)
-                                            {
-                                                let currentWire     = this.saveGameParser.getTargetObject(mWires.values[n].pathName);
-                                                    new Promise((resolve) => {
-                                                        this.parseObject(currentWire, resolve);
-                                                    }).then((result) => {
-                                                        let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
-                                                            this.deleteMarkerFromElements(result.layer, oldMarker, fastDelete);
-                                                            this.addElementToLayer(result.layer, result.marker);
-                                                    });
-                                            }
-                                        }
+                                    Building_PowerLine.redrawWiresFromPowerConnection(this, currentObjectChildren, fastDelete);
                                 }
-                            }
+                        }
+
+                        if(Building_DigitalStorage_NetworkCable.availableConnections.indexOf(childrenType) !== -1)
+                        {
+                            let currentObjectChildren = this.saveGameParser.getTargetObject(properties.object.pathName + childrenType);
+                                if(currentObjectChildren !== null)
+                                {
+                                    Building_DigitalStorage_NetworkCable.redrawCablesFromPowerConnection(this, currentObjectChildren, fastDelete);
+                                }
                         }
                 }
             }
@@ -2772,7 +2773,7 @@ export default class BaseLayout
                 }
             }
 
-        // Check all known power connection in children and delete wires when needed!
+        // Check all known power connection in children and delete wires/cable when needed!
         if(currentObject.children !== undefined)
         {
             for(let i = 0; i < currentObject.children.length; i++)
@@ -2780,14 +2781,23 @@ export default class BaseLayout
                 let childrenPathName    = currentObject.children[i].pathName;
                 let childrenType        = '.' + childrenPathName.split('.').pop();
 
-                if(Building_PowerLine.availableConnections.indexOf(childrenType) !== -1)
-                {
-                    let currentObjectChildren = baseLayout.saveGameParser.getTargetObject(pathName + childrenType);
-                        if(currentObjectChildren !== null)
-                        {
-                            baseLayout.deletePlayerWiresFromPowerConnection(currentObjectChildren);
-                        }
-                }
+                    if(Building_PowerLine.availableConnections.indexOf(childrenType) !== -1)
+                    {
+                        let currentObjectChildren = baseLayout.saveGameParser.getTargetObject(pathName + childrenType);
+                            if(currentObjectChildren !== null)
+                            {
+                                Building_PowerLine.deleteWiresFromPowerConnection(baseLayout, currentObjectChildren);
+                            }
+                    }
+
+                    if(Building_DigitalStorage_NetworkCable.availableConnections.indexOf(childrenType) !== -1)
+                    {
+                        let currentObjectChildren = baseLayout.saveGameParser.getTargetObject(pathName + childrenType);
+                            if(currentObjectChildren !== null)
+                            {
+                                Building_DigitalStorage_NetworkCable.deleteCablesFromConnection(baseLayout, currentObjectChildren);
+                            }
+                    }
             }
         }
 
@@ -3281,38 +3291,6 @@ export default class BaseLayout
             if(mTopSnappedConnection !== null)
             {
 
-            }
-    }
-
-    deletePlayerWiresFromPowerConnection(currentObjectPowerConnection)
-    {
-        let currentObjectWires = this.getObjectProperty(currentObjectPowerConnection, 'mWires');
-            if(currentObjectWires !== null)
-            {
-                let wires = [];
-                    for(let i = 0; i < currentObjectWires.values.length; i++)
-                    {
-                        let wireMarker = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
-                            if(wireMarker === null) // Most likely a mod so try a larger search...
-                            {
-                                wireMarker = this.getMarkerFromPathName(currentObjectWires.values[i].pathName);
-                            }
-
-
-                        if(wireMarker !== null)
-                        {
-                            wireMarker.baseLayout   = this;
-                            wires.push(wireMarker);
-                        }
-                    }
-
-                if(wires.length > 0)
-                {
-                    for(let i = 0; i < wires.length; i++)
-                    {
-                        Building_PowerLine.delete(wires[i]);
-                    }
-                }
             }
     }
 

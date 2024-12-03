@@ -834,10 +834,13 @@ export default class SaveParser_Read
                 let missingBytes = (startByte + entityLength) - this.currentByte;
                     if(missingBytes > 4)
                     {
-                        if(
-                                this.header.saveVersion >= 41
-                            && (this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG') || this.objects[objectKey].className.startsWith('/Script/FicsitFarming.') || this.objects[objectKey].className.startsWith('/Script/RefinedRDLib.'))
-                        )
+                        if(this.header.saveVersion >= 41 && (
+                                this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG')
+                             || this.objects[objectKey].className.startsWith('/Script/FicsitFarming.')
+                             || this.objects[objectKey].className.startsWith('/Script/RefinedRDLib.')
+                             || this.objects[objectKey].className.startsWith('/Script/DigitalStorage.')
+
+                        ))
                         {
                             this.skipBytes(8);
                         }

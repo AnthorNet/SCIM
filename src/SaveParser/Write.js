@@ -1022,10 +1022,12 @@ export default class SaveParser_Write
                 }
                 else
                 {
-                    if(
-                            this.header.saveVersion >= 41
-                         && (currentObject.className.startsWith('/Script/FactoryGame.FG') || currentObject.className.startsWith('/Script/FicsitFarming.') || currentObject.className.startsWith('/Script/RefinedRDLib.'))
-                    )
+                    if(this.header.saveVersion >= 41 && (
+                            currentObject.className.startsWith('/Script/FactoryGame.FG')
+                         || currentObject.className.startsWith('/Script/FicsitFarming.')
+                         || currentObject.className.startsWith('/Script/RefinedRDLib.')
+                         || currentObject.className.startsWith('/Script/DigitalStorage.')
+                    ))
                     {
                         entity += this.writeByte(0);
                         entity += this.writeByte(0);
