@@ -2425,8 +2425,7 @@ export default class SaveParser_Read
                         case '/Script/FactoryGame.InventoryStack':
                             if(this.header.saveVersion >= 42)
                             {
-                                structure.unk3      = this.readString();
-                                structure.unk4      = this.readString();
+                                structure.unk3      = this.readObjectProperty();
                                 structure.unk5      = this.readInt();
                                 structure.unk6      = this.readInt();
                                 structure.unk7      = this.readStructProperty(structure, structure.unk2);
@@ -2434,8 +2433,7 @@ export default class SaveParser_Read
                             }
                             else
                             {
-                                structure.unk3      = this.readInt();
-                                structure.unk4      = this.readString();
+                                structure.unk3      = this.readObjectProperty();
 
                                 structure.unk5      = this.readInt();
                                 structure.unk6      = this.readInt();
@@ -2445,8 +2443,7 @@ export default class SaveParser_Read
                             break;
 
                         case '/Script/FactoryGame.ItemAmount':
-                            structure.unk3      = this.readInt();
-                            structure.unk4      = this.readString();
+                            structure.unk3      = this.readObjectProperty();
                             structure.unk5      = this.readInt();
 
                             break;
@@ -2478,11 +2475,17 @@ export default class SaveParser_Read
 
                             break;
 
+                        case '/Script/FactoryGame.InventoryItem':
+                            structure.unk3      = this.readObjectProperty();
+                            structure.unk4      = this.readInt();
+                            structure.unk5      = this.readObjectProperty();
+
+                            break;
+
                          // Skip!
                         case '/Script/FactoryGame.PrefabSignData':
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
                         case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
-                        case '/Script/FactoryGame.InventoryItem':
                         case '/Script/FicsItNetworks.FINRailroadSignalBlock':
 
                             break;

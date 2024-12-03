@@ -2464,8 +2464,7 @@ export default class SaveParser_Write
                     case '/Script/FactoryGame.InventoryStack':
                         if(this.header.saveVersion >= 41)
                         {
-                            saveBinary += this.writeString(value.structs[i].unk3);
-                            saveBinary += this.writeString(value.structs[i].unk4);
+                            saveBinary += this.writeObjectProperty(value.structs[i].unk3);
                             saveBinary += this.writeInt(value.structs[i].unk5);
                             saveBinary += this.writeInt(value.structs[i].unk6);
                             saveBinary += this.writeStructProperty(value.structs[i].unk7, value.structs[i].unk2);
@@ -2473,8 +2472,7 @@ export default class SaveParser_Write
                         }
                         else
                         {
-                            saveBinary += this.writeInt(value.structs[i].unk3);
-                            saveBinary += this.writeString(value.structs[i].unk4);
+                            saveBinary += this.writeObjectProperty(value.structs[i].unk3);
                             saveBinary += this.writeInt(value.structs[i].unk5);
                             saveBinary += this.writeInt(value.structs[i].unk6);
                             saveBinary += this.writeInt(value.structs[i].unk7);
@@ -2483,8 +2481,7 @@ export default class SaveParser_Write
                         break;
 
                     case '/Script/FactoryGame.ItemAmount':
-                        saveBinary += this.writeInt(value.structs[i].unk3);
-                        saveBinary += this.writeString(value.structs[i].unk4);
+                        saveBinary += this.writeObjectProperty(value.structs[i].unk3);
                         saveBinary += this.writeInt(value.structs[i].unk5);
 
                         break;
@@ -2492,11 +2489,6 @@ export default class SaveParser_Write
                     case '/Script/FicsItNetworks.FINTrackGraph':
                         saveBinary += this.writeFINNetworkTrace(value.structs[i].trace);
                         saveBinary += this.writeInt(value.structs[i].trackId);
-
-                        break;
-
-                    case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
-                        saveBinary += this.writeProperty(value.structs[i].property);
 
                         break;
 
@@ -2514,6 +2506,18 @@ export default class SaveParser_Write
                         }
 
                         saveBinary += this.writeHex(value.structs[i].unk3);
+
+                        break;
+
+                    case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+                        saveBinary += this.writeProperty(value.structs[i].property);
+
+                        break;
+
+                    case '/Script/FactoryGame.InventoryItem':
+                        saveBinary += this.writeObjectProperty(value.structs[i].unk3);
+                        saveBinary += this.writeInt(value.structs[i].unk4);
+                        saveBinary += this.writeObjectProperty(value.structs[i].unk5);
 
                         break;
                 }
