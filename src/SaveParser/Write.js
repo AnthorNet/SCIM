@@ -2432,12 +2432,19 @@ export default class SaveParser_Write
             saveBinary += this.writeString(value.thread);
             saveBinary += this.writeString(value.globals);
 
-            saveBinary += this.writeInt(value.version);
-            saveBinary += this.writeInt(value.structs.length - 1);
+            if(value.version !== undefined)
+            {
+                saveBinary += this.writeInt(value.version);
+            }
+
+            saveBinary += this.writeInt(value.structs.length - ((this.header.saveVersion >= 46) ? 1 : 0));
 
             for(let i = 0; i < value.structs.length; i++)
             {
-                //saveBinary += this.writeInt(value.structs[i].unk1);
+                if(value.structs[i].unk1 !== undefined)
+                {
+                    saveBinary += this.writeInt(value.structs[i].unk1);
+                }
                 saveBinary += this.writeString(value.structs[i].unk2);
 
                 switch(value.structs[i].unk2)
@@ -2464,7 +2471,7 @@ export default class SaveParser_Write
                         break;
 
                     case '/Script/FactoryGame.InventoryStack':
-                        if(this.header.saveVersion >= 41)
+                        if(this.header.saveVersion >= 42)
                         {
                             saveBinary += this.writeObjectProperty(value.structs[i].unk3);
                             saveBinary += this.writeInt(value.structs[i].unk5);
@@ -2512,14 +2519,20 @@ export default class SaveParser_Write
                         break;
 
                     case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
-                        saveBinary += this.writeProperty(value.structs[i].property);
+                        if(this.header.saveVersion >= 46)
+                        {
+                            saveBinary += this.writeProperty(value.structs[i].property);
+                        }
 
                         break;
 
                     case '/Script/FactoryGame.InventoryItem':
-                        saveBinary += this.writeObjectProperty(value.structs[i].unk3);
-                        saveBinary += this.writeInt(value.structs[i].unk4);
-                        saveBinary += this.writeObjectProperty(value.structs[i].unk5);
+                        if(this.header.saveVersion >= 46)
+                        {
+                            saveBinary += this.writeObjectProperty(value.structs[i].unk3);
+                            saveBinary += this.writeInt(value.structs[i].unk4);
+                            saveBinary += this.writeObjectProperty(value.structs[i].unk5);
+                        }
 
                         break;
                 }
