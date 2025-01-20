@@ -1480,6 +1480,12 @@ export default class SaveParser_Write
 
                             break;
 
+                        // MOD: FicsIt-Networks
+                        case 'FIRAnyValue':
+                            structure += this.writeFIRAnyValue(currentProperty.value.values[i]);
+
+                            break;
+
                         default:
                             for(let j = 0; j < currentProperty.value.values[i].length; j++)
                             {
@@ -1967,6 +1973,12 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'FINLuaRuntimePersistenceState': // MOD: FicsIt-Networks
+                property += this.writeInt(currentProperty.value.values.unk1);
+                property += this.writeFINLuaProcessorStateStorage(currentProperty.value.values.trace);
+
+                break;
+
             case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
                 property += this.writeInt64(currentProperty.value.begin);
                 property += this.writeInt64(currentProperty.value.end);
@@ -2432,19 +2444,11 @@ export default class SaveParser_Write
             saveBinary += this.writeString(value.thread);
             saveBinary += this.writeString(value.globals);
 
-            if(value.version !== undefined)
-            {
-                saveBinary += this.writeInt(value.version);
-            }
-
-            saveBinary += this.writeInt(value.structs.length - ((this.header.saveVersion >= 46) ? 1 : 0));
+            saveBinary += this.writeInt(value.structs.length);
 
             for(let i = 0; i < value.structs.length; i++)
             {
-                if(value.structs[i].unk1 !== undefined)
-                {
-                    saveBinary += this.writeInt(value.structs[i].unk1);
-                }
+                saveBinary += this.writeInt(value.structs[i].unk1);
                 saveBinary += this.writeString(value.structs[i].unk2);
 
                 switch(value.structs[i].unk2)
@@ -2519,9 +2523,15 @@ export default class SaveParser_Write
                         break;
 
                     case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+                    case '/Script/FicsItNetworksMisc.FINFutureReflection':
                         if(this.header.saveVersion >= 46)
                         {
-                            saveBinary += this.writeProperty(value.structs[i].property);
+                            for(let i = 0; i < value.structs[i].properties.length; i++)
+                            {
+                                saveBinary += this.writeProperty(value.structs[i].properties[i]);
+                            }
+                            saveBinary += this.writeString('None');
+                            //saveBinary += this.writeProperty(value.structs[i].property);
                         }
 
                         break;
@@ -2572,6 +2582,27 @@ export default class SaveParser_Write
             saveBinary += this.writeString('None');
 
         return saveBinary;
+    }
+
+    writeFIRAnyValue(value)
+    {
+        let saveBinary  = '';
+            saveBinary += this.writeInt(value.type);
+
+            switch(value.type)
+            {
+                case 4: // FIR_STR
+                    saveBinary += this.writeString(value.value);
+
+                    break;
+
+                default:
+
+                    break;
+
+            }
+
+            return saveBinary;
     }
 };
 

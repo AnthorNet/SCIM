@@ -1338,6 +1338,29 @@ export default class SaveParser_Read
 
                             break;
 
+                        // MOD: FicsIt-Networks
+                        case 'FIRAnyValue':
+                            currentProperty.value.values.push(this.readFIRAnyValue());
+                            /* ???
+                            FIR_NIL = 0,
+                            FIR_BOOL,
+                            FIR_INT,
+                            FIR_FLOAT,
+                            FIR_STR,
+                            FIR_OBJ,
+                            FIR_CLASS,
+                            FIR_TRACE,
+                            FIR_STRUCT,
+                            FIR_ARRAY,
+                            FIR_ANY,
+                            */
+                            //let type = this.readInt8();
+                            console.log(i, currentArrayPropertyCount, 'FIRAnyValue', this.readInt8())//, this.readByte(), this.readByte())
+                            console.log(this.readString())
+
+
+                            break;
+
                         default: // Try normalised structure, then throw Error if not working...
                             try
                             {
@@ -1936,6 +1959,14 @@ export default class SaveParser_Read
 
                 break;
 
+            case 'FIRExecutionContext': // MOD: FicsIt-Networks
+                currentProperty.value.values = {
+                    unk1    : this.readInt(),
+                    trace   : this.readFINNetworkTrace()
+                };
+
+                break;
+
             case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
                 currentProperty.value.begin         = this.readInt64();
                 currentProperty.value.end           = this.readInt64();
@@ -2363,19 +2394,11 @@ export default class SaveParser_Read
         data.thread         = this.readString();
         data.globals        = this.readString();
 
-        if(this.header.saveVersion >= 46)
-        {
-            data.version        = this.readInt();
-        }
-
-        let countStructs = this.readInt() + ((this.header.saveVersion >= 46) ? 1 : 0);
+        let countStructs = this.readInt();
             for(let i = 0; i < countStructs; i++)
             {
                 let structure = {};
-                    if(this.header.saveVersion < 46)
-                    {
-                        structure.unk1  = this.readInt();
-                    }
+                    structure.unk1  = this.readInt();
                     structure.unk2  = this.readString();
 
                     switch(structure.unk2)
@@ -2390,7 +2413,6 @@ export default class SaveParser_Read
                         case '/Script/CoreUObject.Vector2D':
                             structure.x         = this.readDouble();
                             structure.y         = this.readDouble();
-
                             break;
 
                         case '/Script/CoreUObject.LinearColor':
@@ -2450,9 +2472,20 @@ export default class SaveParser_Read
                             break;
 
                         case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
+                        case '/Script/FicsItNetworksMisc.FINFutureReflection':
                             if(this.header.saveVersion >= 46)
                             {
-                                structure.property = this.readProperty();
+                                structure.properties = [];
+                                while(true)
+                                {
+                                    let property = this.readProperty();
+                                        if(property === null)
+                                        {
+                                            break;
+                                        }
+
+                                        structure.properties.push(property);
+                                }
                             }
 
                             break;
@@ -2493,9 +2526,9 @@ export default class SaveParser_Read
 
     readFINDynamicStructHolder()
     {
-        let data                 = {};
-            data.unk0            = this.readInt();
-            data.type            = this.readString();
+        let data                = {};
+            data.unk0           = this.readInt();
+            data.type           = this.readString();
 
             switch(data.type)
             {
@@ -2546,6 +2579,41 @@ export default class SaveParser_Read
                     }
 
                 data.properties.push(subStructProperty);
+            }
+
+        return data;
+    }
+
+    readFIRAnyValue()
+    {
+        let data                = {};
+            data.type           = this.readInt8();
+
+            /* ???
+            FIR_NIL = 0,
+            FIR_BOOL,
+            FIR_INT,
+            FIR_FLOAT,
+            FIR_STR,
+            FIR_OBJ,
+            FIR_CLASS,
+            FIR_TRACE,
+            FIR_STRUCT,
+            FIR_ARRAY,
+            FIR_ANY,
+            */
+
+            switch(data.type)
+            {
+                case 4: // FIR_STR
+                    data.value  = this.readString();
+
+                    break;
+
+                default:
+
+                    break;
+
             }
 
         return data;
