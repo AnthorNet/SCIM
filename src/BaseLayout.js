@@ -662,7 +662,12 @@ export default class BaseLayout
                 {
                     continue;
                 }
-                /*
+
+                if(currentObject.className.includes('x3_roads'))
+                {
+                    console.log('x3_roads', currentObject)
+                }
+                /*x3_roads
                 if(currentObject.className.includes('Subsystem'))
                 {
                     console.log('Subsystem', currentObject)

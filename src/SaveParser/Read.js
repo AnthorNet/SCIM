@@ -839,8 +839,9 @@ export default class SaveParser_Read
                              || this.objects[objectKey].className.startsWith('/Script/FicsitFarming.')
                              || this.objects[objectKey].className.startsWith('/Script/RefinedRDLib.')
                              || this.objects[objectKey].className.startsWith('/Script/DigitalStorage.')
+                             || this.objects[objectKey].className.startsWith('/Script/FicsIt')
 
-                        ))
+                        ) && missingBytes  === 8)
                         {
                             this.skipBytes(8);
                         }
@@ -1341,23 +1342,6 @@ export default class SaveParser_Read
                         // MOD: FicsIt-Networks
                         case 'FIRAnyValue':
                             currentProperty.value.values.push(this.readFIRAnyValue());
-                            /* ???
-                            FIR_NIL = 0,
-                            FIR_BOOL,
-                            FIR_INT,
-                            FIR_FLOAT,
-                            FIR_STR,
-                            FIR_OBJ,
-                            FIR_CLASS,
-                            FIR_TRACE,
-                            FIR_STRUCT,
-                            FIR_ARRAY,
-                            FIR_ANY,
-                            */
-                            //let type = this.readInt8();
-                            console.log(i, currentArrayPropertyCount, 'FIRAnyValue', this.readInt8())//, this.readByte(), this.readByte())
-                            console.log(this.readString())
-
 
                             break;
 
@@ -1599,7 +1583,6 @@ export default class SaveParser_Read
                                 mapPropertySubProperties.unk4           = this.readFloat();
 
                                 mapPropertySubProperties.unk5           = this.readString();
-                                //mapPropertySubProperties.unk6           = this.readProperty();
 
                                 break;
                             }
@@ -1955,7 +1938,7 @@ export default class SaveParser_Read
 
             case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
             case 'FINLuaRuntimePersistenceState':
-                currentProperty.value.values        = this.readFINLuaProcessorStateStorage(currentProperty.value.type);
+                currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
 
                 break;
 
@@ -1976,6 +1959,13 @@ export default class SaveParser_Read
             case 'IntPoint': // MOD: FicsIt-Cam
                 currentProperty.value.x             = this.readInt();
                 currentProperty.value.y             = this.readInt();
+
+                break;
+
+            // MOD: FicsIt-Networks
+            case 'FINDynamicStructHolder':
+            case 'FIRInstancedStruct':
+                currentProperty.value.values = this.readFINDynamicStructHolder();
 
                 break;
 
@@ -2373,7 +2363,7 @@ export default class SaveParser_Read
 
     // https://github.com/CoderDE/FicsIt-Networks/blob/master/Source/FicsItNetworks/FicsItKernel/Processor/Lua/LuaProcessorStateStorage.cpp#L6
     // https://github.com/Panakotta00/FicsIt-Networks/blob/ce414aeb2eaf3acc82f2f3bc22b7ac76258ea663/Source/FicsItNetworksLua/Private/FINLuaRuntimePersistence.cpp#L8
-    readFINLuaProcessorStateStorage(type)
+    readFINLuaProcessorStateStorage()
     {
         let data            = {trace: [], reference: [], structs: []};
         let countTrace      = this.readInt();
@@ -2399,9 +2389,9 @@ export default class SaveParser_Read
             {
                 let structure = {};
                     structure.unk1  = this.readInt();
-                    structure.unk2  = this.readString();
+                    structure.type  = this.readString();
 
-                    switch(structure.unk2)
+                    switch(structure.type)
                     {
                         case '/Script/CoreUObject.Vector':
                             structure.x         = this.readFloat();
@@ -2429,7 +2419,7 @@ export default class SaveParser_Read
                                 structure.unk3      = this.readObjectProperty();
                                 structure.unk5      = this.readInt();
                                 structure.unk6      = this.readInt();
-                                structure.unk7      = this.readStructProperty(structure, structure.unk2);
+                                structure.unk7      = this.readStructProperty(structure, structure.type);
                                 structure.unk8      = this.readString();
                             }
                             else
@@ -2478,7 +2468,7 @@ export default class SaveParser_Read
                                 structure.properties = [];
                                 while(true)
                                 {
-                                    let property = this.readProperty();
+                                    let property = this.readProperty(structure.type);
                                         if(property === null)
                                         {
                                             break;
@@ -2515,7 +2505,7 @@ export default class SaveParser_Read
                                 Sentry.setContext('currentData', data);
                             }
 
-                            throw new Error('Unimplemented `' + structure.unk2 + '` in readFINLuaProcessorStateStorage');
+                            throw new Error('Unimplemented `' + structure.type + '` in readFINLuaProcessorStateStorage');
                     }
 
                     data.structs.push(structure);
@@ -2528,16 +2518,20 @@ export default class SaveParser_Read
     {
         let data                = {};
             data.unk0           = this.readInt();
-            data.type           = this.readString();
+            data.subType        = this.readString();
 
-            switch(data.type)
+            if(data.subType === '')
             {
-                // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L265
+                return data;
+
+            }
+
+            switch(data.subType)
+            {
                 case '/Script/FicsItNetworks.FINGPUT2DC_Box':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_Box':
-                    break;
-
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_Text':
+                case '/Script/FicsItNetworksLua.FINEventFilter':
                     break;
 
                 // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L165
@@ -2566,13 +2560,13 @@ export default class SaveParser_Read
                         Sentry.setContext('currentData', data);
                     }
 
-                    throw new Error('Unimplemented `' + data.type + '` in FINDynamicStructHolder');
+                    throw new Error('Unimplemented `' + data.subType + '` in FINDynamicStructHolder');
             }
 
             data.properties      = [];
             while(true)
             {
-                let subStructProperty = this.readProperty();
+                let subStructProperty = this.readProperty(data.subType);
                     if(subStructProperty === null)
                     {
                         break;
@@ -2611,7 +2605,13 @@ export default class SaveParser_Read
                     break;
 
                 default:
+                    this.worker.postMessage({command: 'alertParsing'});
+                    if(typeof Sentry !== 'undefined')
+                    {
+                        Sentry.setContext('currentData', data);
+                    }
 
+                    throw new Error('Unimplemented `' + data.type + '` in readFIRAnyValue');
                     break;
 
             }

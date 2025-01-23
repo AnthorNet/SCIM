@@ -1027,6 +1027,7 @@ export default class SaveParser_Write
                          || currentObject.className.startsWith('/Script/FicsitFarming.')
                          || currentObject.className.startsWith('/Script/RefinedRDLib.')
                          || currentObject.className.startsWith('/Script/DigitalStorage.')
+                         || currentObject.className.startsWith('/Script/FicsIt')
                     ))
                     {
                         entity += this.writeByte(0);
@@ -1698,6 +1699,7 @@ export default class SaveParser_Write
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mNormalIndex);
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mOverflowIndex);
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mFilterIndex);
+
                         break;
                     }
                     if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C' || parentType === '/CentralStorage/Subsystem_SC.Subsystem_SC_C')
@@ -1988,6 +1990,13 @@ export default class SaveParser_Write
             case 'IntPoint':  // MOD: FicsIt-Cam
                 property += this.writeInt(currentProperty.value.x);
                 property += this.writeInt(currentProperty.value.y);
+
+                break;
+
+            // MOD: FicsIt-Networks
+            case 'FINDynamicStructHolder':
+            case 'FIRInstancedStruct':
+                property += this.writeFINDynamicStructHolder(currentProperty.value.values);
 
                 break;
 
@@ -2449,9 +2458,9 @@ export default class SaveParser_Write
             for(let i = 0; i < value.structs.length; i++)
             {
                 saveBinary += this.writeInt(value.structs[i].unk1);
-                saveBinary += this.writeString(value.structs[i].unk2);
+                saveBinary += this.writeString(value.structs[i].type);
 
-                switch(value.structs[i].unk2)
+                switch(value.structs[i].type)
                 {
                     case '/Script/CoreUObject.Vector':
                         saveBinary += this.writeFloat(value.structs[i].x);
@@ -2480,7 +2489,7 @@ export default class SaveParser_Write
                             saveBinary += this.writeObjectProperty(value.structs[i].unk3);
                             saveBinary += this.writeInt(value.structs[i].unk5);
                             saveBinary += this.writeInt(value.structs[i].unk6);
-                            saveBinary += this.writeStructProperty(value.structs[i].unk7, value.structs[i].unk2);
+                            saveBinary += this.writeStructProperty(value.structs[i].unk7, value.structs[i].type);
                             saveBinary += this.writeString(value.structs[i].unk8);
                         }
                         else
@@ -2526,12 +2535,11 @@ export default class SaveParser_Write
                     case '/Script/FicsItNetworksMisc.FINFutureReflection':
                         if(this.header.saveVersion >= 46)
                         {
-                            for(let i = 0; i < value.structs[i].properties.length; i++)
+                            for(let j = 0; j < value.structs[i].properties.length; j++)
                             {
-                                saveBinary += this.writeProperty(value.structs[i].properties[i]);
+                                saveBinary += this.writeProperty(value.structs[i].properties[j], value.structs[i].type);
                             }
                             saveBinary += this.writeString('None');
-                            //saveBinary += this.writeProperty(value.structs[i].property);
                         }
 
                         break;
@@ -2555,9 +2563,14 @@ export default class SaveParser_Write
     {
         let saveBinary  = '';
             saveBinary += this.writeInt(value.unk0);
-            saveBinary += this.writeString(value.type);
+            saveBinary += this.writeString(value.subType);
 
-            if(['/Script/FicsItNetworks.FINGPUT2DC_Lines', '/Script/FicsItNetworksComputer.FINGPUT2DC_Lines'].includes(value.type))
+            if(value.subType === '')
+            {
+                return saveBinary;
+            }
+
+            if(['/Script/FicsItNetworks.FINGPUT2DC_Lines', '/Script/FicsItNetworksComputer.FINGPUT2DC_Lines'].includes(value.subType))
             {
                 saveBinary += this.writeString(value.unk1);
                 saveBinary += this.writeString(value.unk2);
