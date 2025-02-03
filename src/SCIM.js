@@ -5,6 +5,7 @@ import Translate                                from './Translate.js';
 
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 import Lib_LeafletPlugins                       from './Lib/LeafletPlugins.js';
+import saveAs                                   from './Lib/FileSaver.js';
 
 export default class SCIM
 {
@@ -229,5 +230,68 @@ export default class SCIM
 
         return true;
     };
+
+    /**
+     * Export the current viewport as a png.  If there is a save game loaded, this png will have the same name as the save game file.
+     * If not, it will be named `export.png`
+     * @async
+     * @returns {void}
+     */
+    exportImage() {
+        // no map?
+        if (!this.map) {
+            return null;
+        }
+        let imageName = 'export.png';
+        if (this.baseLayout && this.baseLayout.saveGameParser) {
+            imageName = this.baseLayout.saveGameParser.fileName.replace(/\.sav$/g, '.png');
+        }
+
+        this.map.leafletMap.renderToCanvas((err, canvas) => {
+            if (err) {
+                return console.error(err);
+            }
+
+            if (canvas.toBlob) {
+                return canvas.toBlob((blob) => {
+                    if (!blob) {
+                        console.error('Failed to render to canvas for some reason...');
+                    } else {
+                        saveAs(blob, imageName);
+                    }
+                });
+            } else {
+                const dataURL = canvas.toDataURL();
+                if (!dataURL) {
+                    console.error('Could not get data url from canvas!');
+                }
+
+                const BASE64_MARKER = ';base64,';
+                let blob;
+                if (dataURL.indexOf(BASE64_MARKER) == -1) {
+                    const parts = dataURL.split(',');
+                    const contentType = parts[0].split(':')[1];
+                    const raw = decodeURIComponent(parts[1]);
+
+                    blob = new Blob([raw], {type: contentType});
+                } else {
+                    const parts = dataURL.split(BASE64_MARKER);
+                    const contentType = parts[0].split(':')[1];
+                    const raw = window.atob(parts[1]);
+                    const rawLength = raw.length;
+
+                    const uInt8Array = new Uint8Array(rawLength);
+
+                    for (let i = 0; i < rawLength; ++i) {
+                        uInt8Array[i] = raw.charCodeAt(i);
+                    }
+
+                    blob = new Blob([uInt8Array], {type: contentType});
+                }
+
+                saveAs(blob, imageName);
+            }
+        });
+    }
 }
 window.SCIM = new SCIM();
