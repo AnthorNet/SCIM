@@ -2533,6 +2533,7 @@ export default class SaveParser_Write
 
                     case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
                     case '/Script/FicsItNetworksMisc.FINFutureReflection':
+                    case '/Script/FactoryGame.PrefabSignData':
                         if(this.header.saveVersion >= 46)
                         {
                             for(let j = 0; j < value.structs[i].properties.length; j++)

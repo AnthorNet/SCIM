@@ -2463,6 +2463,7 @@ export default class SaveParser_Read
 
                         case '/Script/FicsItNetworksLua.FINLuaEventRegistry':
                         case '/Script/FicsItNetworksMisc.FINFutureReflection':
+                        case '/Script/FactoryGame.PrefabSignData':
                             if(this.header.saveVersion >= 46)
                             {
                                 structure.properties = [];
@@ -2491,7 +2492,6 @@ export default class SaveParser_Read
                             break;
 
                          // Skip!
-                        case '/Script/FactoryGame.PrefabSignData':
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture':
                         case '/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture':
                         case '/Script/FicsItNetworks.FINRailroadSignalBlock':
