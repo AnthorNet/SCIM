@@ -662,12 +662,7 @@ export default class BaseLayout
                 {
                     continue;
                 }
-
-                if(currentObject.className.includes('x3_roads'))
-                {
-                    console.log('x3_roads', currentObject)
-                }
-                /*x3_roads
+                /*
                 if(currentObject.className.includes('Subsystem'))
                 {
                     console.log('Subsystem', currentObject)
@@ -1491,6 +1486,12 @@ export default class BaseLayout
             ].includes(currentObject.className))
             {
                 itemId  = 'Desc_HogParts_C';
+            }
+            if([
+                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C'
+            ].includes(currentObject.className))
+            {
+                itemId  = 'Desc_StingerParts_C';
             }
 
         let itemMarker  = L.mapMarker(
